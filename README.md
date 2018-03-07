@@ -126,27 +126,27 @@ Before make, you can set such options in the `Makefile`: [link](https://github.c
 
 ### How to compile on Windows:
 
-1. If you have **MSVS 2015, CUDA 9.1 and OpenCV 3.0** (with paths: `C:\opencv_3.0\opencv\build\include` & `C:\opencv_3.0\opencv\build\x64\vc14\lib`), then start MSVS, open `build\darknet\darknet.sln`, set **x64** and **Release**, and do the: Build -> Build darknet
+1. It required **Visual Studio 2015** or later version with Platform Toolset v140 building source code, or visit [Visual Studio Downloads](https://www.visualstudio.com/downloads/) for more IDE information. The solution files of source code located at `build\darknet\`, use **Release** and **x64** building configuration
 
-    1.1. Find files `opencv_world320.dll` and `opencv_ffmpeg320_64.dll` in `C:\opencv_3.0\opencv\build\x64\vc14\bin` and put it near with `darknet.exe`
+2. Download **OpenCV 3.0** and follow [How to set building environment variables with Visual Studio](https://docs.opencv.org/3.3.0/d6/d8a/tutorial_windows_visual_studio_Opencv.html), and variable path should be target to `<install path>\build\x64\vc14`
 
-2. If you have other version of **CUDA (not 9.1)** then open `build\darknet\darknet.vcxproj` by using Notepad, find 2 places with "CUDA 9.1" and change it to your CUDA-version, then do step 1
+    - Find files `opencv_world<ver>.dll` and `opencv_ffmpeg<ver>_64.dll` in `opencv\build\x64\vc14\bin` and put it near with `darknet.exe`
 
-3. If you **don't have GPU**, but have **MSVS 2015 and OpenCV 3.0** (with paths: `C:\opencv_3.0\opencv\build\include` & `C:\opencv_3.0\opencv\build\x64\vc14\lib`), then start MSVS, open `build\darknet\darknet_no_gpu.sln`, set **x64** and **Release**, and do the: Build -> Build darknet_no_gpu
+    - If you have **OpenCV 2.4.13** instead of 3.0, check `OPENCV_DIR` in system environment variables is correct
 
-4. If you have **OpenCV 2.4.13** instead of 3.0 then you should change pathes after `\darknet.sln` is opened
+3. (Optional but recommanded) Download **CUDA 9.1** and follow [installation guide](http://docs.nvidia.com/cuda/cuda-installation-guide-microsoft-windows/index.html), installer will automatically add `CUDA_PATH` to system environment variables, and create CUDA related macros in Visual Studio IDE for project properties
 
-    4.1 (right click on project) -> properties  -> C/C++ -> General -> Additional Include Directories:  `C:\opencv_2.4.13\opencv\build\include`
-  
-    4.2 (right click on project) -> properties  -> Linker -> General -> Additional Library Directories: `C:\opencv_2.4.13\opencv\build\x64\vc14\lib`
-  
-5. If you want to build with CUDNN to speed up then:
-      
-    * download and install **cuDNN 7.0 for CUDA 9.1**: https://developer.nvidia.com/cudnn
-      
-    * add Windows system variable `cudnn` with path to CUDNN: https://hsto.org/files/a49/3dc/fc4/a493dcfc4bd34a1295fd15e0e2e01f26.jpg
-      
-    * open `\darknet.sln` -> (right click on project) -> properties  -> C/C++ -> Preprocessor -> Preprocessor Definitions, and add at the beginning of line: `CUDNN;`
+   - If you have other version of **CUDA (not 9.1)**, check `CUDA_PATH` in system environment variables is targeting to CUDA installation root directory, `CudaToolkitIncludeDir` and `CudaToolkitLibDir` macro in Visual Studio IDE have valid path for inblude and lib pathes
+
+   - If you want to build with CUDNN to speed up, download **cuDNN 7.0 for CUDA 9.1** from [here](https://developer.nvidia.com/cudnn) and follow [installation guide](http://docs.nvidia.com/deeplearning/sdk/cudnn-install/index.html). In Visual Studio Project Properties -> C/C++ -> Preprocessor -> Preprocessor Definitions, add or remove `CUDNN` predefined keyword
+
+4. If you **don't have GPU**, use `darknet_no_gpu.sln` instead
+
+5. If you have different installation location of OpenCV or CUDA for Visual Studio:
+
+    - add include directory to Project Properties -> C/C++ -> General -> Additional Include Directories
+
+    - add lib directory to Project Properties -> Linker -> General -> Additional Library Directories
 
 ### How to compile (custom):
 
