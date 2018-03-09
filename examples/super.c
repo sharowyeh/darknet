@@ -1,13 +1,6 @@
-#include "network.h"
-#include "cost_layer.h"
-#include "utils.h"
-#include "parser.h"
+#include "darknet.h"
 
-#ifdef OPENCV
-#include "opencv2/highgui/highgui_c.h"
-#endif
-
-void train_super(char *cfgfile, char *weightfile)
+void train_super(char *cfgfile, char *weightfile, int clear)
 {
     char *train_images = "/data/imagenet/imagenet1k.train.list";
     char *backup_directory = "/home/pjreddie/backup/";
@@ -15,13 +8,10 @@ void train_super(char *cfgfile, char *weightfile)
     char *base = basecfg(cfgfile);
     printf("%s\n", base);
     float avg_loss = -1;
-    network net = parse_network_cfg(cfgfile);
-    if(weightfile){
-        load_weights(&net, weightfile);
-    }
-    printf("Learning Rate: %g, Momentum: %g, Decay: %g\n", net.learning_rate, net.momentum, net.decay);
-    int imgs = net.batch*net.subdivisions;
-    int i = *net.seen/imgs;
+    network *net = load_network(cfgfile, weightfile, clear);
+    printf("Learning Rate: %g, Momentum: %g, Decay: %g\n", net->learning_rate, net->momentum, net->decay);
+    int imgs = net->batch*net->subdivisions;
+    int i = *net->seen/imgs;
     data train, buffer;
 
 
@@ -30,8 +20,8 @@ void train_super(char *cfgfile, char *weightfile)
     char **paths = (char **)list_to_array(plist);
 
     load_args args = {0};
-    args.w = net.w;
-    args.h = net.h;
+    args.w = net->w;
+    args.h = net->h;
     args.scale = 4;
     args.paths = paths;
     args.n = imgs;
@@ -42,7 +32,7 @@ void train_super(char *cfgfile, char *weightfile)
     pthread_t load_thread = load_data_in_thread(args);
     clock_t time;
     //while(i*imgs < N*120){
-    while(get_current_batch(net) < net.max_batches){
+    while(get_current_batch(net) < net->max_batches){
         i += 1;
         time=clock();
         pthread_join(load_thread, 0);
@@ -76,11 +66,8 @@ void train_super(char *cfgfile, char *weightfile)
 
 void test_super(char *cfgfile, char *weightfile, char *filename)
 {
-    network net = parse_network_cfg(cfgfile);
-    if(weightfile){
-        load_weights(&net, weightfile);
-    }
-    set_batch_network(&net, 1);
+    network *net = load_network(cfgfile, weightfile, 0);
+    set_batch_network(net, 1);
     srand(2222222);
 
     clock_t time;
@@ -97,7 +84,7 @@ void test_super(char *cfgfile, char *weightfile, char *filename)
             strtok(input, "\n");
         }
         image im = load_image_color(input, 0, 0);
-        resize_network(&net, im.w, im.h);
+        resize_network(net, im.w, im.h);
         printf("%d %d\n", im.w, im.h);
 
         float *X = im.data;
@@ -123,7 +110,8 @@ void run_super(int argc, char **argv)
     char *cfg = argv[3];
     char *weights = (argc > 4) ? argv[4] : 0;
     char *filename = (argc > 5) ? argv[5] : 0;
-    if(0==strcmp(argv[2], "train")) train_super(cfg, weights);
+    int clear = find_arg(argc, argv, "-clear");
+    if(0==strcmp(argv[2], "train")) train_super(cfg, weights, clear);
     else if(0==strcmp(argv[2], "test")) test_super(cfg, weights, filename);
     /*
     else if(0==strcmp(argv[2], "valid")) validate_super(cfg, weights);

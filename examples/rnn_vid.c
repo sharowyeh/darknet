@@ -1,19 +1,11 @@
-#include "network.h"
-#include "cost_layer.h"
-#include "utils.h"
-#include "parser.h"
-#include "blas.h"
+#include "darknet.h"
 
 #ifdef OPENCV
-#include "opencv2/highgui/highgui_c.h"
-#include "opencv2/core/version.hpp"
-#ifndef CV_VERSION_EPOCH
-#include "opencv2/videoio/videoio_c.h"
-#endif
 image get_image_from_stream(CvCapture *cap);
 image ipl_to_image(IplImage* src);
 
-void reconstruct_picture(network net, float *features, image recon, image update, float rate, float momentum, float lambda, int smooth_size, int iters);
+// Merge0309: for pjreddie not implements, net variable is pointer of network
+void reconstruct_picture(network *net, float *features, image recon, image update, float rate, float momentum, float lambda, int smooth_size, int iters);
 
 
 typedef struct {
@@ -21,17 +13,18 @@ typedef struct {
     float *y;
 } float_pair;
 
-float_pair get_rnn_vid_data(network net, char **files, int n, int batch, int steps)
+// Merge0309: for pjreddie not implements, net variable is pointer of network
+float_pair get_rnn_vid_data(network *net, char **files, int n, int batch, int steps)
 {
     int b;
     assert(net.batch == steps + 1);
     image out_im = get_network_image(net);
     int output_size = out_im.w*out_im.h*out_im.c;
     printf("%d %d %d\n", out_im.w, out_im.h, out_im.c);
-    float *feats = calloc(net.batch*batch*output_size, sizeof(float));
+    float *feats = calloc(net->batch*batch*output_size, sizeof(float));
     for(b = 0; b < batch; ++b){
-        int input_size = net.w*net.h*net.c;
-        float *input = calloc(input_size*net.batch, sizeof(float));
+        int input_size = net->w*net->h*net->c;
+        float *input = calloc(input_size*net->batch, sizeof(float));
         char *filename = files[rand()%n];
         CvCapture *cap = cvCaptureFromFile(filename);
         int frames = cvGetCaptureProperty(cap, CV_CAP_PROP_FRAME_COUNT);
@@ -46,11 +39,11 @@ float_pair get_rnn_vid_data(network net, char **files, int n, int batch, int ste
         cvSetCaptureProperty(cap, CV_CAP_PROP_POS_FRAMES, index);
 
         int i;
-        for(i = 0; i < net.batch; ++i){
+        for(i = 0; i < net->batch; ++i){
             IplImage* src = cvQueryFrame(cap);
             image im = ipl_to_image(src);
             rgbgr_image(im);
-            image re = resize_image(im, net.w, net.h);
+            image re = resize_image(im, net->w, net->h);
             //show_image(re, "loaded");
             //cvWaitKey(10);
             memcpy(input + i*input_size, re.data, input_size*sizeof(float));
@@ -61,7 +54,7 @@ float_pair get_rnn_vid_data(network net, char **files, int n, int batch, int ste
 
         free(input);
 
-        for(i = 0; i < net.batch; ++i){
+        for(i = 0; i < net->batch; ++i){
             memcpy(feats + (b + i*batch)*output_size, output + i*output_size, output_size*sizeof(float));
         }
 
@@ -85,30 +78,29 @@ void train_vid_rnn(char *cfgfile, char *weightfile)
     char *base = basecfg(cfgfile);
     printf("%s\n", base);
     float avg_loss = -1;
-    network net = parse_network_cfg(cfgfile);
-    if(weightfile){
-        load_weights(&net, weightfile);
-    }
-    printf("Learning Rate: %g, Momentum: %g, Decay: %g\n", net.learning_rate, net.momentum, net.decay);
-    int imgs = net.batch*net.subdivisions;
-    int i = *net.seen/imgs;
+	// Merge0309: for pjreddie not implements, net variable is pointer of network
+	network *net = load_network(cfgfile, weightfile, 0);
+    printf("Learning Rate: %g, Momentum: %g, Decay: %g\n", net->learning_rate, net->momentum, net->decay);
+    int imgs = net->batch*net->subdivisions;
+    int i = *net->seen/imgs;
 
     list *plist = get_paths(train_videos);
     int N = plist->size;
     char **paths = (char **)list_to_array(plist);
     clock_t time;
-    int steps = net.time_steps;
-    int batch = net.batch / net.time_steps;
+    int steps = net->time_steps;
+    int batch = net->batch / net->time_steps;
 
-    network extractor = parse_network_cfg("cfg/extractor.cfg");
-    load_weights(&extractor, "/home/pjreddie/trained/yolo-coco.conv");
+	network *extractor = load_network("cfg/extractor.cfg", "/home/pjreddie/trained/yolo-coco.conv", 0);
 
-    while(get_current_batch(net) < net.max_batches){
+    while(get_current_batch(net) < net->max_batches){
         i += 1;
         time=clock();
         float_pair p = get_rnn_vid_data(extractor, paths, N, batch, steps);
 
-        float loss = train_network_datum(net, p.x, p.y) / (net.batch);
+        copy_cpu(net->inputs*net->batch, p.x, 1, net->input, 1);
+        copy_cpu(net->truths*net->batch, p.y, 1, net->truth, 1);
+        float loss = train_network_datum(net) / (net->batch);
 
 
         free(p.x);
@@ -132,17 +124,17 @@ void train_vid_rnn(char *cfgfile, char *weightfile)
     save_weights(net, buff);
 }
 
-
-image save_reconstruction(network net, image *init, float *feat, char *name, int i)
+// Merge0309: for pjreddie not implements, net variable is pointer of network
+image save_reconstruction(network *net, image *init, float *feat, char *name, int i)
 {
     image recon;
     if (init) {
         recon = copy_image(*init);
     } else {
-        recon = make_random_image(net.w, net.h, 3);
+        recon = make_random_image(net->w, net->h, 3);
     }
 
-    image update = make_image(net.w, net.h, 3);
+    image update = make_image(net->w, net->h, 3);
     reconstruct_picture(net, feat, recon, update, .01, .9, .1, 2, 50);
     char buff[256];
     sprintf(buff, "%s%d", name, i);
@@ -153,25 +145,21 @@ image save_reconstruction(network net, image *init, float *feat, char *name, int
 
 void generate_vid_rnn(char *cfgfile, char *weightfile)
 {
-    network extractor = parse_network_cfg("cfg/extractor.recon.cfg");
-    load_weights(&extractor, "/home/pjreddie/trained/yolo-coco.conv");
-
-    network net = parse_network_cfg(cfgfile);
-    if(weightfile){
-        load_weights(&net, weightfile);
-    }
-    set_batch_network(&extractor, 1);
-    set_batch_network(&net, 1);
+	// Merge0309: for pjreddie not implements, net variable is pointer of network
+	network *extractor = load_network("cfg/extractor.recon.cfg", "/home/pjreddie/trained/yolo-coco.conv", 0);
+	
+	network *net = load_network(cfgfile, weightfile, 0);
+    set_batch_network(extractor, 1);
+    set_batch_network(net, 1);
 
     int i;
     CvCapture *cap = cvCaptureFromFile("/extra/vid/ILSVRC2015/Data/VID/snippets/val/ILSVRC2015_val_00007030.mp4");
     float *feat;
     float *next;
-	next = NULL;
     image last;
     for(i = 0; i < 25; ++i){
         image im = get_image_from_stream(cap);
-        image re = resize_image(im, extractor.w, extractor.h);
+        image re = resize_image(im, extractor->w, extractor->h);
         feat = network_predict(extractor, re.data);
         if(i > 0){
             printf("%f %f\n", mean_array(feat, 14*14*512), variance_array(feat, 14*14*512));

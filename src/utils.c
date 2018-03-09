@@ -3,16 +3,64 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
-#include <float.h>
-#include <limits.h>
+// Merge0309: for WIN32 platform
 #ifdef WIN32
 #include "unistd.h"
+#include "..\src\gettimeofday.h"
+#define read _read
+#define write _write
+#define rand() random_gen()
 #else
 #include <unistd.h>
 #endif
+#include <float.h>
+#include <limits.h>
+#include <time.h>
+
 #include "utils.h"
 
-#pragma warning(disable: 4996)
+
+/*
+// old timing. is it better? who knows!!
+double get_wall_time()
+{
+    struct timeval time;
+    if (gettimeofday(&time,NULL)){
+        return 0;
+    }
+    return (double)time.tv_sec + (double)time.tv_usec * .000001;
+}
+*/
+
+double what_time_is_it_now()
+{
+    struct timespec now;
+    clock_gettime(CLOCK_REALTIME, &now);
+    return now.tv_sec + now.tv_nsec*1e-9;
+}
+
+int *read_intlist(char *gpu_list, int *ngpus, int d)
+{
+    int *gpus = 0;
+    if(gpu_list){
+        int len = strlen(gpu_list);
+        *ngpus = 1;
+        int i;
+        for(i = 0; i < len; ++i){
+            if (gpu_list[i] == ',') ++*ngpus;
+        }
+        gpus = calloc(*ngpus, sizeof(int));
+        for(i = 0; i < *ngpus; ++i){
+            gpus[i] = atoi(gpu_list);
+            gpu_list = strchr(gpu_list, ',')+1;
+        }
+    } else {
+        gpus = calloc(1, sizeof(float));
+        *gpus = d;
+        *ngpus = 1;
+    }
+    return gpus;
+}
 
 int *read_map(char *filename)
 {
@@ -36,7 +84,8 @@ void sorta_shuffle(void *arr, size_t n, size_t size, size_t sections)
         size_t start = n*i/sections;
         size_t end = n*(i+1)/sections;
         size_t num = end-start;
-        shuffle((char*)arr+(start*size), num, size);
+		// Merge0309: vc can not move void pointer directly
+        shuffle((char *)arr+(start*size), num, size);
     }
 }
 
@@ -46,10 +95,27 @@ void shuffle(void *arr, size_t n, size_t size)
     void *swp = calloc(1, size);
     for(i = 0; i < n-1; ++i){
         size_t j = i + rand()/(RAND_MAX / (n-i)+1);
-        memcpy(swp,			(char*)arr+(j*size), size);
-        memcpy((char*)arr+(j*size), (char*)arr+(i*size), size);
-        memcpy((char*)arr+(i*size), swp,          size);
+		// Merge0309: vc can not move void pointer directly
+        memcpy(swp, (char *)arr+(j*size), size);
+        memcpy((char *)arr+(j*size), (char *)arr+(i*size), size);
+        memcpy((char *)arr+(i*size), swp,          size);
     }
+}
+
+int *random_index_order(int min, int max)
+{
+    int *inds = calloc(max-min, sizeof(int));
+    int i;
+    for(i = min; i < max; ++i){
+        inds[i] = i;
+    }
+    for(i = min; i < max-1; ++i){
+        int swap = inds[i];
+        int index = i + rand()%(max-i);
+        inds[i] = inds[index];
+        inds[index] = swap;
+    }
+    return inds;
 }
 
 void del_arg(int argc, char **argv, int index)
@@ -126,7 +192,6 @@ char *basecfg(char *cfgfile)
     {
         c = next+1;
     }
-	if(!next) while ((next = strchr(c, '\\'))) { c = next + 1; }
     c = copy_string(c);
     next = strchr(c, '.');
     if (next) *next = 0;
@@ -198,6 +263,21 @@ void error(const char *s)
     perror(s);
     assert(0);
     exit(-1);
+}
+
+unsigned char *read_file(char *filename)
+{
+    FILE *fp = fopen(filename, "rb");
+    size_t size;
+
+    fseek(fp, 0, SEEK_END); 
+    size = ftell(fp);
+    fseek(fp, 0, SEEK_SET); 
+
+    unsigned char *text = calloc(size+1, sizeof(char));
+    fread(text, 1, size, fp);
+    fclose(fp);
+    return text;
 }
 
 void malloc_error()
@@ -286,8 +366,10 @@ char *fgetl(FILE *fp)
         fgets(&line[curr], readsize, fp);
         curr = strlen(line);
     }
-    if(line[curr-2] == 0x0d) line[curr-2] = 0x00;
-    if(line[curr-1] == 0x0a) line[curr-1] = 0x00;
+	// Merge0309: for WIN32 platform
+	if (line[curr - 2] == 0x0d) line[curr - 2] = 0x00;
+	if (line[curr - 1] == 0x0a) line[curr - 1] = 0x00;
+    //if(line[curr-1] == '\n') line[curr-1] = '\0';
 
     return line;
 }
@@ -531,6 +613,20 @@ int sample_array(float *a, int n)
     return n-1;
 }
 
+int max_int_index(int *a, int n)
+{
+    if(n <= 0) return -1;
+    int i, max_i = 0;
+    int max = a[0];
+    for(i = 1; i < n; ++i){
+        if(a[i] > max){
+            max = a[i];
+            max_i = i;
+        }
+    }
+    return max_i;
+}
+
 int max_index(float *a, int n)
 {
     if(n <= 0) return -1;
@@ -592,13 +688,13 @@ float rand_normal()
 size_t rand_size_t()
 {
     return  ((size_t)(rand()&0xff) << 56) | 
-            ((size_t)(rand()&0xff) << 48) |
-            ((size_t)(rand()&0xff) << 40) |
-            ((size_t)(rand()&0xff) << 32) |
-            ((size_t)(rand()&0xff) << 24) |
-            ((size_t)(rand()&0xff) << 16) |
-            ((size_t)(rand()&0xff) << 8) |
-            ((size_t)(rand()&0xff) << 0);
+        ((size_t)(rand()&0xff) << 48) |
+        ((size_t)(rand()&0xff) << 40) |
+        ((size_t)(rand()&0xff) << 32) |
+        ((size_t)(rand()&0xff) << 24) |
+        ((size_t)(rand()&0xff) << 16) |
+        ((size_t)(rand()&0xff) << 8) |
+        ((size_t)(rand()&0xff) << 0);
 }
 
 float rand_uniform(float min, float max)
@@ -609,13 +705,12 @@ float rand_uniform(float min, float max)
         max = swap;
     }
     return ((float)rand()/RAND_MAX * (max - min)) + min;
-	//return (random_float() * (max - min)) + min;
 }
 
 float rand_scale(float s)
 {
-    float scale = rand_uniform_strong(1, s);
-    if(random_gen()%2) return scale;
+    float scale = rand_uniform(1, s);
+    if(rand()%2) return scale;
     return 1./scale;
 }
 
@@ -631,6 +726,7 @@ float **one_hot_encode(float *a, int n, int k)
     return t;
 }
 
+// Merge0309: for WIN32 platform
 unsigned int random_gen()
 {
 	unsigned int rnd = 0;
@@ -640,23 +736,4 @@ unsigned int random_gen()
 	rnd = rand();
 #endif
 	return rnd;
-}
-
-float random_float()
-{
-#ifdef WIN32
-	return ((float)random_gen() / (float)UINT_MAX);
-#else
-	return ((float)random_gen() / (float)RAND_MAX);
-#endif
-}
-
-float rand_uniform_strong(float min, float max)
-{
-	if (max < min) {
-		float swap = min;
-		min = max;
-		max = swap;
-	}
-	return (random_float() * (max - min)) + min;
 }

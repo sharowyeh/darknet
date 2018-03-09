@@ -121,32 +121,30 @@ void train_go(char *cfgfile, char *weightfile)
     float avg_loss = -1;
     char *base = basecfg(cfgfile);
     printf("%s\n", base);
-    network net = parse_network_cfg(cfgfile);
-    if(weightfile){
-        load_weights(&net, weightfile);
-    }
-    printf("Learning Rate: %g, Momentum: %g, Decay: %g\n", net.learning_rate, net.momentum, net.decay);
+	// Merge0309: for pjreddie not implements, net variable is pointer of network
+	network *net = load_network(cfgfile, weightfile, 0);
+    printf("Learning Rate: %g, Momentum: %g, Decay: %g\n", net->learning_rate, net->momentum, net->decay);
 
     char *backup_directory = "/home/pjreddie/backup/";
 
     char buff[256];
-    float *board = calloc(19*19*net.batch, sizeof(float));
-    float *move = calloc(19*19*net.batch, sizeof(float));
+    float *board = calloc(19*19*net->batch, sizeof(float));
+    float *move = calloc(19*19*net->batch, sizeof(float));
     moves m = load_go_moves("/home/pjreddie/backup/go.train");
     //moves m = load_go_moves("games.txt");
 
     int N = m.n;
-    int epoch = (*net.seen)/N;
-    while(get_current_batch(net) < net.max_batches || net.max_batches == 0){
+    int epoch = (*net->seen)/N;
+    while(get_current_batch(net) < net->max_batches || net->max_batches == 0){
         clock_t time=clock();
 
-        random_go_moves(m, board, move, net.batch);
-        float loss = train_network_datum(net, board, move) / net.batch;
+        random_go_moves(m, board, move, net->batch);
+        float loss = train_network_datum(net, board, move) / net->batch;
         if(avg_loss == -1) avg_loss = loss;
         avg_loss = avg_loss*.95 + loss*.05;
-        printf("%d, %.3f: %f, %f avg, %f rate, %lf seconds, %d images\n", get_current_batch(net), (float)(*net.seen)/N, loss, avg_loss, get_current_rate(net), sec(clock()-time), *net.seen);
-        if(*net.seen/N > epoch){
-            epoch = *net.seen/N;
+        printf("%d, %.3f: %f, %f avg, %f rate, %lf seconds, %d images\n", get_current_batch(net), (float)(*net->seen)/N, loss, avg_loss, get_current_rate(net), sec(clock()-time), *net->seen);
+        if(*net->seen/N > epoch){
+            epoch = *net->seen/N;
             char buff[256];
             sprintf(buff, "%s/%s_%d.weights", backup_directory,base, epoch);
             save_weights(net, buff);
@@ -261,7 +259,8 @@ void flip_board(float *board)
 
 void predict_move(network net, float *board, float *move, int multi)
 {
-    float *output = network_predict(net, board);
+	// Merge0309: for pjreddie not implements, net variable is pointer of network
+    float *output = network_predict(&net, board);
     copy_cpu(19*19, output, 1, move, 1);
     int i;
     if(multi){
@@ -270,7 +269,7 @@ void predict_move(network net, float *board, float *move, int multi)
             rotate_image_cw(bim, i);
             if(i >= 4) flip_image(bim);
 
-            float *output = network_predict(net, board);
+            float *output = network_predict(&net, board);
             image oim = float_to_image(19, 19, 1, output);
 
             if(i >= 4) flip_image(oim);
@@ -404,12 +403,10 @@ void valid_go(char *cfgfile, char *weightfile, int multi)
     srand(time(0));
     char *base = basecfg(cfgfile);
     printf("%s\n", base);
-    network net = parse_network_cfg(cfgfile);
-    if(weightfile){
-        load_weights(&net, weightfile);
-    }
-    set_batch_network(&net, 1);
-    printf("Learning Rate: %g, Momentum: %g, Decay: %g\n", net.learning_rate, net.momentum, net.decay);
+	// Merge0309: for pjreddie not implements, net variable is pointer of network
+	network *net = load_network(cfgfile, weightfile, 0);
+    set_batch_network(net, 1);
+    printf("Learning Rate: %g, Momentum: %g, Decay: %g\n", net->learning_rate, net->momentum, net->decay);
 
     float *board = calloc(19*19, sizeof(float));
     float *move = calloc(19*19, sizeof(float));
@@ -424,7 +421,7 @@ void valid_go(char *cfgfile, char *weightfile, int multi)
         int col = b[1];
         int truth = col + 19*row;
         string_to_board(b+2, board);
-        predict_move(net, board, move, multi);
+        predict_move(*net, board, move, multi);
         int index = max_index(move, 19*19);
         if(index == truth) ++correct;
         printf("%d Accuracy %f\n", i, (float) correct/(i+1));
@@ -433,12 +430,10 @@ void valid_go(char *cfgfile, char *weightfile, int multi)
 
 void engine_go(char *filename, char *weightfile, int multi)
 {
-    network net = parse_network_cfg(filename);
-    if(weightfile){
-        load_weights(&net, weightfile);
-    }
+	// Merge0309: for pjreddie not implements, net variable is pointer of network
+	network *net = load_network(filename, weightfile, 0);
     srand(time(0));
-    set_batch_network(&net, 1);
+    set_batch_network(net, 1);
     float *board = calloc(19*19, sizeof(float));
     char *one = calloc(91, sizeof(char));
     char *two = calloc(91, sizeof(char));
@@ -534,7 +529,7 @@ void engine_go(char *filename, char *weightfile, int multi)
             scanf("%s", color);
             int player = (color[0] == 'b' || color[0] == 'B') ? 1 : -1;
 
-            int index = generate_move(net, player, board, multi, .1, .7, two, 1);
+            int index = generate_move(*net, player, board, multi, .1, .7, two, 1);
             if(passed || index < 0){
                 printf("=%s pass\n\n", ids);
                 passed = 0;
@@ -606,12 +601,10 @@ void engine_go(char *filename, char *weightfile, int multi)
 
 void test_go(char *cfg, char *weights, int multi)
 {
-    network net = parse_network_cfg(cfg);
-    if(weights){
-        load_weights(&net, weights);
-    }
+	// Merge0309: for pjreddie not implements, net variable is pointer of network
+	network *net = load_network(cfg, weights, 0);
     srand(time(0));
-    set_batch_network(&net, 1);
+    set_batch_network(net, 1);
     float *board = calloc(19*19, sizeof(float));
     float *move = calloc(19*19, sizeof(float));
     int color = 1;
@@ -747,23 +740,18 @@ float score_game(float *board)
 
 void self_go(char *filename, char *weightfile, char *f2, char *w2, int multi)
 {
-    network net = parse_network_cfg(filename);
-    if(weightfile){
-        load_weights(&net, weightfile);
-    }
+	// Merge0309: for pjreddie not implements, net variable is pointer of network
+	network *net = load_network(filename, weightfile, 0);
 
-    network net2 = net;
-    if(f2){
-        net2 = parse_network_cfg(f2);
-        if(w2){
-            load_weights(&net2, w2);
-        }
+    network* net2 = net;
+    if(f2 && w2){
+        net2 = load_network(f2, w2, 0);
     }
     srand(time(0));
     char boards[300][93];
     int count = 0;
-    set_batch_network(&net, 1);
-    set_batch_network(&net2, 1);
+    set_batch_network(net, 1);
+    set_batch_network(net2, 1);
     float *board = calloc(19*19, sizeof(float));
     char *one = calloc(91, sizeof(char));
     char *two = calloc(91, sizeof(char));
@@ -796,8 +784,8 @@ void self_go(char *filename, char *weightfile, char *f2, char *w2, int multi)
         }
         //print_board(board, 1, 0);
         //sleep(1);
-        network use = ((total%2==0) == (player==1)) ? net : net2;
-        int index = generate_move(use, player, board, multi, .1, .7, two, 0);
+        network* use = ((total%2==0) == (player==1)) ? net : net2;
+        int index = generate_move(*use, player, board, multi, .1, .7, two, 0);
         if(index < 0){
             done = 1;
             continue;

@@ -8,6 +8,10 @@
   #define DELTA_EPOCH_IN_MICROSECS  11644473600000000ULL
 #endif
  
+// Merge0309: new clock_gettime warpper for glibc
+# define CLOCK_REALTIME                        0
+int clock_gettime(int type, struct timespec *now);
+
 struct timezone 
 {
   int  tz_minuteswest; /* minutes W of Greenwich */

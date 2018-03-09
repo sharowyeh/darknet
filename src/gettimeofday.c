@@ -1,5 +1,17 @@
 #include "gettimeofday.h"
- 
+
+// Merge0309: glibc helper for clock_gettime
+int clock_gettime(int type, struct timespec *now)
+{
+	struct timeval time;
+	if (gettimeofday(&time, NULL)) {
+		return 0;
+	}
+	now->tv_sec = time.tv_sec;
+	now->tv_nsec = time.tv_usec * 1000;
+	return 0;
+}
+
 int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
   FILETIME ft;

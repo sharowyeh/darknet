@@ -7,7 +7,9 @@
 layer make_reorg_old_layer(int batch, int w, int h, int c, int stride, int reverse)
 {
     layer l = {0};
-    l.type = REORG_OLD;
+	// Merge0309: missing definition from upstream
+	l.type = REORG;
+	//l.type = REORG_OLD;
     l.batch = batch;
     l.stride = stride;
     l.h = h;
@@ -99,20 +101,20 @@ void backward_reorg_old_layer(const layer l, network_state state)
 void forward_reorg_old_layer_gpu(layer l, network_state state)
 {
 	if (l.reverse) {
-		reorg_ongpu(state.input, l.w, l.h, l.c, l.batch, l.stride, 1, l.output_gpu);
+		reorg_gpu(state.input, l.w, l.h, l.c, l.batch, l.stride, 1, l.output_gpu);
 	}
 	else {
-		reorg_ongpu(state.input, l.w, l.h, l.c, l.batch, l.stride, 0, l.output_gpu);
+		reorg_gpu(state.input, l.w, l.h, l.c, l.batch, l.stride, 0, l.output_gpu);
 	}
 }
 
 void backward_reorg_old_layer_gpu(layer l, network_state state)
 {
 	if (l.reverse) {
-		reorg_ongpu(l.delta_gpu, l.w, l.h, l.c, l.batch, l.stride, 0, state.delta);
+		reorg_gpu(l.delta_gpu, l.w, l.h, l.c, l.batch, l.stride, 0, state.delta);
 	}
 	else {
-		reorg_ongpu(l.delta_gpu, l.w, l.h, l.c, l.batch, l.stride, 1, state.delta);
+		reorg_gpu(l.delta_gpu, l.w, l.h, l.c, l.batch, l.stride, 1, state.delta);
 	}
 }
 #endif
