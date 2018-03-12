@@ -51,14 +51,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\opencv_3.0\opencv\build\include;..\..\3rdparty\include;%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);$(cudnn)\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_MBCS;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;GPU;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <UndefinePreprocessorDefinitions>CUDNN</UndefinePreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(OPENCV_DIR)\..\..\include;..\..\Include;..\..\3rdparty\include;%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);$(CUDA_PATH)\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD;CUDNN;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;GPU;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>_MBCS</UndefinePreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\opencv_3.0\opencv\build\x64\vc14\lib;C:\opencv_2.4.13\opencv\build\x64\vc12\lib;C:\opencv_2.4.13\opencv\build\x64\vc14\lib;$(CUDA_PATH)lib\$(PlatformName);$(cudnn)\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OPENCV_DIR)\lib;$(CudaToolkitLibDir);$(CUDA_PATH)\lib\$(PlatformName);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OutputFile>$(OutDir)\$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalDependencies>..\..\3rdparty\lib\x64\pthreadVC2.lib;cublas.lib;curand.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AssemblyDebug>true</AssemblyDebug>
@@ -182,6 +182,7 @@
     <ClCompile Include="..\..\examples\yolo.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\darknet.h" />
     <ClInclude Include="..\..\src\activations.h" />
     <ClInclude Include="..\..\src\activation_layer.h" />
     <ClInclude Include="..\..\src\avgpool_layer.h" />
