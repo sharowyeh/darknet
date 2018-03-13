@@ -5,6 +5,14 @@
 #include "darknet.h"
 #include "list.h"
 
+// Merge0313: redefined for WIN32 platform in header file
+#ifdef WIN32
+#define read _read
+#define write _write
+unsigned int rand_win32();
+#define rand rand_win32
+#endif
+
 #define TIME(a) \
     do { \
     double start = what_time_is_it_now(); \
