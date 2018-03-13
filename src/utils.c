@@ -7,20 +7,9 @@
 #ifdef WIN32
 #include "unistd.h"
 #include "..\src\gettimeofday.h"
-// Merge0313: rand thread safe in WIN32 using pthread
-unsigned int rand_win32()
-{
-	unsigned int rnd = 0;
-#ifdef WIN32
-	// Use rand_s for pthread safe in WIN32
-	rand_s(&rnd);
-	// Scope to RAND_MAX from UINT_MAX
-	rnd = (unsigned int)((double)rnd / UINT_MAX * RAND_MAX);
-#else
-	rnd = rand();
-#endif
-	return rnd;
-}
+#define read _read
+#define write _write
+#define rand() random_gen()
 #else
 #include <unistd.h>
 #endif
@@ -735,4 +724,16 @@ float **one_hot_encode(float *a, int n, int k)
         t[i][index] = 1;
     }
     return t;
+}
+
+// Merge0309: for WIN32 platform
+unsigned int random_gen()
+{
+	unsigned int rnd = 0;
+#ifdef WIN32
+	rand_s(&rnd);
+#else
+	rnd = rand();
+#endif
+	return rnd;
 }
