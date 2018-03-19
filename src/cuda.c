@@ -173,6 +173,7 @@ void cuda_push_array(float *x_gpu, float *x, size_t n)
     //cudaError_t status = cudaMemcpy(x_gpu, x, size, cudaMemcpyHostToDevice);
 	cudaError_t status = cudaMemcpyAsync(x_gpu, x, size, cudaMemcpyHostToDevice, get_cuda_stream());
     check_error(status);
+	cudaStreamSynchronize(get_cuda_stream());
 }
 
 void cuda_pull_array(float *x_gpu, float *x, size_t n)

@@ -235,6 +235,19 @@
     <ClInclude Include="..\..\src\unistd.h" />
     <ClInclude Include="..\..\src\utils.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\scripts\dice_label.sh" />
+    <None Include="..\..\scripts\gen_anchors.py" />
+    <None Include="..\..\scripts\gen_tactic.sh" />
+    <None Include="..\..\scripts\get_coco_dataset.sh" />
+    <None Include="..\..\scripts\imagenet_label.sh" />
+    <None Include="..\..\scripts\reval_voc.py" />
+    <None Include="..\..\scripts\reval_voc_py3.py" />
+    <None Include="..\..\scripts\voc_eval.py" />
+    <None Include="..\..\scripts\voc_eval_py3.py" />
+    <None Include="..\..\scripts\voc_label.py" />
+    <None Include="..\..\scripts\voc_label_difficult.py" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 9.1.targets" />

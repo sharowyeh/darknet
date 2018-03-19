@@ -54,6 +54,10 @@ for year, image_set in sets:
         convert_annotation(year, image_id)
     list_file.close()
 
-os.system("cat 2007_train.txt 2007_val.txt 2012_train.txt 2012_val.txt > train.txt")
-os.system("cat 2007_train.txt 2007_val.txt 2007_test.txt 2012_train.txt 2012_val.txt > train.all.txt")
+# Merge0314: supports WIN32 platform
+os_cmd = 'cat'
+if os.name is 'nt':
+    os_cmd = 'type'
+os.system("%s 2007_train.txt 2007_val.txt 2012_train.txt 2012_val.txt > train.txt"%(os_cmd))
+os.system("%s 2007_train.txt 2007_val.txt 2007_test.txt 2012_train.txt 2012_val.txt > train.all.txt"%(os_cmd))
 

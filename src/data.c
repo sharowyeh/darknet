@@ -424,7 +424,8 @@ void fill_truth_detection(char *path, int num_boxes, float *truth, int classes, 
     float x,y,w,h;
     int id;
     int i;
-
+	// Merge0316: training will break boxes for loop if box is invalid, sequential valid boxes to truth
+	int truth_idx = 0;
     for (i = 0; i < count; ++i) {
         x =  boxes[i].x;
         y =  boxes[i].y;
@@ -434,11 +435,12 @@ void fill_truth_detection(char *path, int num_boxes, float *truth, int classes, 
 
         if ((w < .001 || h < .001)) continue;
 
-        truth[i*5+0] = x;
-        truth[i*5+1] = y;
-        truth[i*5+2] = w;
-        truth[i*5+3] = h;
-        truth[i*5+4] = id;
+        truth[truth_idx *5+0] = x;
+        truth[truth_idx *5+1] = y;
+        truth[truth_idx *5+2] = w;
+        truth[truth_idx *5+3] = h;
+        truth[truth_idx *5+4] = id;
+		truth_idx++;
     }
     free(boxes);
 }
@@ -1339,8 +1341,8 @@ data load_cifar10_data(char *filename)
     for(i = 0; i < 10000; ++i){
         unsigned char bytes[3073];
         fread(bytes, 1, 3073, fp);
-        int class = bytes[0];
-        y.vals[i][class] = 1;
+        int class_id = bytes[0];
+        y.vals[i][class_id] = 1;
         for(j = 0; j < X.cols; ++j){
             X.vals[i][j] = (double)bytes[j+1];
         }
@@ -1402,8 +1404,8 @@ data load_all_cifar10()
         for(i = 0; i < 10000; ++i){
             unsigned char bytes[3073];
             fread(bytes, 1, 3073, fp);
-            int class = bytes[0];
-            y.vals[i+b*10000][class] = 1;
+            int class_id = bytes[0];
+            y.vals[i+b*10000][class_id] = 1;
             for(j = 0; j < X.cols; ++j){
                 X.vals[i+b*10000][j] = (double)bytes[j+1];
             }

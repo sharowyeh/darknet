@@ -731,15 +731,3 @@ float **one_hot_encode(float *a, int n, int k)
     }
     return t;
 }
-
-// Merge0309: for WIN32 platform
-unsigned int random_gen()
-{
-	unsigned int rnd = 0;
-#ifdef WIN32
-	rand_s(&rnd);
-#else
-	rnd = rand();
-#endif
-	return rnd;
-}
