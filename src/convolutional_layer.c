@@ -213,6 +213,8 @@ void cudnn_convolutional_setup_pref(layer *l, int cudnn_preference)
 	cudnnSetTensor4dDescriptor(l->srcTensorDesc, CUDNN_TENSOR_NCHW, data_type, l->batch, l->c, l->h, l->w);
 	cudnnSetTensor4dDescriptor(l->dstTensorDesc, CUDNN_TENSOR_NCHW, data_type, l->batch, l->out_c, l->out_h, l->out_w);
 	cudnnSetFilter4dDescriptor(l->weightDesc, data_type, CUDNN_TENSOR_NCHW, l->n, l->c, l->size, l->size);
+
+	cudnnSetTensor4dDescriptor(l->normTensorDesc, CUDNN_TENSOR_NCHW, data_type, 1, l->out_c, 1, 1);
 #if(CUDNN_MAJOR >= 6)
 	cudnnSetConvolution2dDescriptor(l->convDesc, l->pad, l->pad, l->stride, l->stride, 1, 1, CUDNN_CROSS_CORRELATION, CUDNN_DATA_FLOAT);	// cudnn >= 6.0
 #else
@@ -397,7 +399,7 @@ convolutional_layer make_convolutional_layer(int batch, int h, int w, int c, int
         cudnnCreateTensorDescriptor(&l.ddstTensorDesc);
         cudnnCreateFilterDescriptor(&l.dweightDesc);
         cudnnCreateConvolutionDescriptor(&l.convDesc);
-        cudnn_convolutional_setup(&l);
+        cudnn_convolutional_setup_pref(&l, CUDNN_PREF_DEFAULT);
 #endif
     }
 #endif
@@ -484,11 +486,11 @@ void resize_convolutional_layer(convolutional_layer *l, int w, int h)
         l->x_norm_gpu = cuda_make_array(l->output, l->batch*l->outputs);
     }
 #ifdef CUDNN
-    cudnn_convolutional_setup(l);
+    cudnn_convolutional_setup_pref(l, CUDNN_PREF_DEFAULT);
 #endif
 #endif
     l->workspace_size = get_workspace_size(*l);
-}
+}	
 
 void add_bias(float *output, float *biases, int batch, int n, int size)
 {

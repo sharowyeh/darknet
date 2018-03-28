@@ -140,7 +140,8 @@ void forward_detection_layer(const detection_layer l, network net)
                         best_index = 0;
                     }
                 }
-                if(l.random && *(net.seen) < 64000){
+				// Merge0322: prevent definition confilicts by win32 method name
+                if(l.use_random && *(net.seen) < 64000){
                     best_index = rand()%l.n;
                 }
 

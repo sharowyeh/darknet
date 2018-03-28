@@ -17,7 +17,7 @@ typedef struct {
 float_pair get_rnn_vid_data(network *net, char **files, int n, int batch, int steps)
 {
     int b;
-    assert(net.batch == steps + 1);
+    assert(net->batch == steps + 1);
     image out_im = get_network_image(net);
     int output_size = out_im.w*out_im.h*out_im.c;
     printf("%d %d %d\n", out_im.w, out_im.h, out_im.c);

@@ -94,7 +94,8 @@ void train_classifier(char *datacfg, char *cfgfile, char *weightfile, int *gpus,
     int count = 0;
     int epoch = (*net->seen)/N;
     while(get_current_batch(net) < net->max_batches || net->max_batches == 0){
-        if(net->random && count++%40 == 0){
+		// Merge0322: prevent definition confilicts by win32 method name
+		if(net->use_random && count++%40 == 0){
             printf("Resizing\n");
             int dim = (rand() % 11 + 4) * 32;
             //if (get_current_batch(net)+200 > net->max_batches) dim = 608;

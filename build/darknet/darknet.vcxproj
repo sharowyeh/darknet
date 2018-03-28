@@ -52,7 +52,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(OPENCV_DIR)\..\..\include;..\..\Include;..\..\3rdparty\include;%(AdditionalIncludeDirectories);$(CudaToolkitIncludeDir);$(CUDA_PATH)\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD;CUDNN;OPENCV;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;GPU;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>CV_IGNORE_DEBUG_BUILD_GUARD;OPENCV;CUDNN;_TIMESPEC_DEFINED;_CRT_SECURE_NO_WARNINGS;_CRT_RAND_S;GPU;WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>_MBCS</UndefinePreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -109,7 +109,6 @@
     <CudaCompile Include="..\..\src\dropout_layer_kernels.cu" />
     <CudaCompile Include="..\..\src\im2col_kernels.cu" />
     <CudaCompile Include="..\..\src\maxpool_layer_kernels.cu" />
-    <CudaCompile Include="..\..\src\network_kernels.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\examples\attention.c" />

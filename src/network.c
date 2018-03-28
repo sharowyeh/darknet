@@ -342,8 +342,8 @@ void set_batch_network(network *net, int b)
 #ifdef CUDNN
         if(net->layers[i].type == CONVOLUTIONAL){
 			// Merge0309: multiple preference of cuda calculation
-			cudnn_convolutional_setup(net->layers + i, CUDNN_PREF_DEFAULT);
-            //cudnn_convolutional_setup(net->layers + i);
+			cudnn_convolutional_setup_pref(net->layers + i, CUDNN_PREF_DEFAULT);
+			//cudnn_convolutional_setup(net->layers + i);
         }
         if(net->layers[i].type == DECONVOLUTIONAL){
             layer *l = net->layers + i;

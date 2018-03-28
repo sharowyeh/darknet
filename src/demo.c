@@ -158,6 +158,9 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     }
 
     if(!cap) error("Couldn't connect to webcam.\n");
+	w = cvGetCaptureProperty(cap, CV_CAP_PROP_FRAME_WIDTH);
+	h = cvGetCaptureProperty(cap, CV_CAP_PROP_FRAME_HEIGHT);
+	frames = cvGetCaptureProperty(cap, CV_CAP_PROP_FPS);
 
     layer l = net->layers[net->n-1];
     demo_detections = l.n*l.w*l.h;
@@ -185,7 +188,7 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
             cvSetWindowProperty("Demo", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
         } else {
             cvMoveWindow("Demo", 0, 0);
-            cvResizeWindow("Demo", 1352, 1013);
+            cvResizeWindow("Demo", w/2, h/2);
         }
     }
 

@@ -195,7 +195,8 @@ struct layer{
     float mask_scale;
     float class_scale;
     int bias_match;
-    int random;
+	// Merge0322: prevent definition confilicts by win32 method name
+    int use_random;
     float thresh;
     int classfix;
     int absolute;
@@ -471,7 +472,8 @@ typedef struct network{
     float exposure;
     float saturation;
     float hue;
-    int random;
+	// Merge0322: prevent definition confilicts by win32 method name
+	int use_random;
 
     int gpu_index;
     tree *hierarchy;

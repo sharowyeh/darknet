@@ -54,12 +54,15 @@ void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, i
     //args.type = INSTANCE_DATA;
     args.threads = 64;
 
-    pthread_t load_thread = load_data(args);
+	// Merge0323: make sure load data thread completed for code trace of trainning image process 
+	//pthread_t load_thread = load_data(args);
+	pthread_t load_thread;
     double time;
     int count = 0;
     //while(i*imgs < N*120){
     while(get_current_batch(net) < net->max_batches){
-        if(l.random && count++%10 == 0){
+		// Merge0322: prevent definition confilicts by win32 method name
+        if(l.use_random && count++%10 == 0){
             printf("Resizing\n");
             int dim = (rand() % 8 + 10) * 32;
             if (get_current_batch(net)+200 > net->max_batches) dim = 544;
@@ -67,11 +70,12 @@ void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, i
             printf("%d\n", dim);
             args.w = dim;
             args.h = dim;
-
+			// Merge0323: make sure load data thread completed for code trace of trainning image process 
+			load_thread = load_data(args);
             pthread_join(load_thread, 0);
             train = buffer;
             free_data(train);
-            load_thread = load_data(args);
+			//load_thread = load_data(args);
 
             for(i = 0; i < ngpus; ++i){
                 resize_network(nets[i], dim, dim);
@@ -79,9 +83,11 @@ void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, i
             net = nets[0];
         }
         time=what_time_is_it_now();
+		// Merge0323: make sure load data thread completed for code trace of trainning image process
+		load_thread = load_data(args);
         pthread_join(load_thread, 0);
         train = buffer;
-        load_thread = load_data(args);
+		//load_thread = load_data(args);
 
         /*
         int k;
