@@ -230,7 +230,7 @@ void fill_truth_swag(char *path, float *truth, int classes, int flip, float dx, 
     int id;
     int i;
 
-    for (i = 0; i < count && i < 30; ++i) {
+    for (i = 0; i < count && i < 90; ++i) {
         x =  boxes[i].x;
         y =  boxes[i].y;
         w =  boxes[i].w;
@@ -425,6 +425,7 @@ void fill_truth_detection(char *path, int num_boxes, float *truth, int classes, 
     int id;
     int i;
 	// Merge0316: training will break boxes for loop if box is invalid, sequential valid boxes to truth
+	// Merge0409: upstream branch uses subtract ++sub do same thing
 	int truth_idx = 0;
     for (i = 0; i < count; ++i) {
         x =  boxes[i].x;
@@ -508,6 +509,7 @@ void fill_truth(char *path, char **labels, int k, float *truth)
         if(strstr(path, labels[i])){
             truth[i] = 1;
             ++count;
+            //printf("%s %s %d\n", path, labels[i], i);
         }
     }
     if(count != 1 && (k != 1 || count != 0)) printf("Too many or too few labels: %d, %s\n", count, path);
@@ -545,19 +547,31 @@ void fill_hierarchy(float *truth, int k, tree *hierarchy)
     }
 }
 
-matrix load_regression_labels_paths(char **paths, int n)
+matrix load_regression_labels_paths(char **paths, int n, int k)
 {
-    matrix y = make_matrix(n, 1);
-    int i;
+    matrix y = make_matrix(n, k);
+    int i,j;
     for(i = 0; i < n; ++i){
         char labelpath[4096];
-        find_replace(paths[i], "images", "targets", labelpath);
-        find_replace(labelpath, "JPEGImages", "targets", labelpath);
+        find_replace(paths[i], "images", "labels", labelpath);
+        find_replace(labelpath, "JPEGImages", "labels", labelpath);
+        find_replace(labelpath, ".BMP", ".txt", labelpath);
+        find_replace(labelpath, ".JPEG", ".txt", labelpath);
+        find_replace(labelpath, ".JPG", ".txt", labelpath);
+        find_replace(labelpath, ".JPeG", ".txt", labelpath);
+        find_replace(labelpath, ".Jpeg", ".txt", labelpath);
+        find_replace(labelpath, ".PNG", ".txt", labelpath);
+        find_replace(labelpath, ".TIF", ".txt", labelpath);
+        find_replace(labelpath, ".bmp", ".txt", labelpath);
+        find_replace(labelpath, ".jpeg", ".txt", labelpath);
         find_replace(labelpath, ".jpg", ".txt", labelpath);
         find_replace(labelpath, ".png", ".txt", labelpath);
+        find_replace(labelpath, ".tif", ".txt", labelpath);
 
         FILE *file = fopen(labelpath, "r");
-        fscanf(file, "%f", &(y.vals[i][0]));
+        for(j = 0; j < k; ++j){
+            fscanf(file, "%f", &(y.vals[i][j]));
+        }
         fclose(file);
     }
     return y;
@@ -580,18 +594,14 @@ matrix load_tags_paths(char **paths, int n, int k)
 {
     matrix y = make_matrix(n, k);
     int i;
-    int count = 0;
+    //int count = 0;
     for(i = 0; i < n; ++i){
         char label[4096];
-        find_replace(paths[i], "imgs", "labels", label);
-        find_replace(label, "_iconl.jpeg", ".txt", label);
+        find_replace(paths[i], "images", "labels", label);
+        find_replace(label, ".jpg", ".txt", label);
         FILE *file = fopen(label, "r");
-        if(!file){
-            find_replace(label, "labels", "labels2", label);
-            file = fopen(label, "r");
-            if(!file) continue;
-        }
-        ++count;
+        if (!file) continue;
+        //++count;
         int tag;
         while(fscanf(file, "%d", &tag) == 1){
             if(tag < k){
@@ -600,7 +610,7 @@ matrix load_tags_paths(char **paths, int n, int k)
         }
         fclose(file);
     }
-    printf("%d/%d\n", count, n);
+    //printf("%d/%d\n", count, n);
     return y;
 }
 
@@ -908,7 +918,7 @@ data load_data_swag(char **paths, int n, int classes, float jitter)
     d.X.vals = calloc(d.X.rows, sizeof(float*));
     d.X.cols = h*w*3;
 
-    int k = (4+classes)*30;
+    int k = (4+classes)*90;
     d.y = make_matrix(1, k);
 
     int dw = w*jitter;
@@ -1007,7 +1017,7 @@ void *load_thread(void *ptr)
     if (a.type == OLD_CLASSIFICATION_DATA){
         *a.d = load_data_old(a.paths, a.n, a.m, a.labels, a.classes, a.w, a.h);
     } else if (a.type == REGRESSION_DATA){
-        *a.d = load_data_regression(a.paths, a.n, a.m, a.min, a.max, a.size, a.angle, a.aspect, a.hue, a.saturation, a.exposure);
+        *a.d = load_data_regression(a.paths, a.n, a.m, a.classes, a.min, a.max, a.size, a.angle, a.aspect, a.hue, a.saturation, a.exposure);
     } else if (a.type == CLASSIFICATION_DATA){
         *a.d = load_data_augment(a.paths, a.n, a.m, a.labels, a.classes, a.hierarchy, a.min, a.max, a.size, a.angle, a.aspect, a.hue, a.saturation, a.exposure, a.center);
     } else if (a.type == SUPER_DATA){
@@ -1163,13 +1173,13 @@ data load_data_super(char **paths, int n, int m, int w, int h, int scale)
     return d;
 }
 
-data load_data_regression(char **paths, int n, int m, int min, int max, int size, float angle, float aspect, float hue, float saturation, float exposure)
+data load_data_regression(char **paths, int n, int m, int k, int min, int max, int size, float angle, float aspect, float hue, float saturation, float exposure)
 {
     if(m) paths = get_random_paths(paths, n, m);
     data d = {0};
     d.shallow = 0;
     d.X = load_image_augment_paths(paths, n, min, max, size, angle, aspect, hue, saturation, exposure, 0);
-    d.y = load_regression_labels_paths(paths, n);
+    d.y = load_regression_labels_paths(paths, n, k);
     if(m) free(paths);
     return d;
 }
