@@ -316,7 +316,8 @@ layer parse_yolo(list *options, size_params params)
 
     l.ignore_thresh = option_find_float(options, "ignore_thresh", .5);
     l.truth_thresh = option_find_float(options, "truth_thresh", 1);
-    l.random = option_find_int_quiet(options, "random", 0);
+	// Merge0409: prevent definition confilicts by win32 method name
+    l.use_random = option_find_int_quiet(options, "random", 0);
 
     char *map_file = option_find_str(options, "map", 0);
     if (map_file) l.map = read_map(map_file);

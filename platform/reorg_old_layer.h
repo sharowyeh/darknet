@@ -1,10 +1,10 @@
 #ifndef REORG_OLD_LAYER_H
 #define REORG_OLD_LAYER_H
 
-#include "image.h"
-#include "cuda.h"
-#include "layer.h"
-#include "network.h"
+#include "..\src\image.h"
+#include "..\src\cuda.h"
+#include "..\src\layer.h"
+#include "..\src\network.h"
 
 // Merge0309: missing definition from upstream
 typedef struct network_state {

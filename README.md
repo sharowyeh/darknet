@@ -1,4 +1,4 @@
-# Yolo-v2 Windows and Linux version
+# Yolo Windows and Linux version
 
 [![CircleCI](https://circleci.com/gh/AlexeyAB/darknet.svg?style=svg)](https://circleci.com/gh/AlexeyAB/darknet)
 
@@ -14,11 +14,8 @@
 10. [Using Yolo9000](#using-yolo9000)
 11. [How to use Yolo as DLL](#how-to-use-yolo-as-dll)
 
-|  ![Darknet Logo](http://pjreddie.com/media/files/darknet-black-small.png) | &nbsp; ![map_fps](https://hsto.org/files/a24/21e/068/a2421e0689fb43f08584de9d44c2215f.jpg) https://arxiv.org/abs/1612.08242 |
-|---|---|
-
-|  ![Darknet Logo](http://pjreddie.com/media/files/darknet-black-small.png) | &nbsp; ![map_fps](https://hsto.org/files/3a6/fdf/b53/3a6fdfb533f34cee9b52bdd9bb0b19d9.jpg) https://arxiv.org/abs/1612.08242 |
-|---|---|
+#|  ![Darknet Logo](http://pjreddie.com/media/files/darknet-black-small.png) | &nbsp; ![map_fps](https://hsto.org/files/a24/21e/068/a2421e0689fb43f08584de9d44c2215f.jpg) https://arxiv.org/abs/1612.08242 |
+#|---|---|
 
 
 # "You Only Look Once: Unified, Real-Time Object Detection (version 2)"

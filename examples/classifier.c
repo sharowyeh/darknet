@@ -4,7 +4,7 @@
 #ifdef WIN32
 #include <time.h>
 #include <winsock.h>
-#include "..\src\gettimeofday.h"
+#include "..\platform\gettimeofday.h"
 #else
 #include <sys/time.h>
 #endif
@@ -419,7 +419,7 @@ void validate_classifier_single(char *datacfg, char *filename, char *weightfile)
             if(indexes[j] == class_id) avg_topk += 1;
         }
 
-        printf("%s, %d, %f, %f, \n", paths[i], class, pred[0], pred[1]);
+        printf("%s, %d, %f, %f, \n", paths[i], class_id, pred[0], pred[1]);
         printf("%d: top 1: %f, top %d: %f\n", i, avg_acc/(i+1), topk, avg_topk/(i+1));
     }
 }

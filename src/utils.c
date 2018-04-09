@@ -5,8 +5,8 @@
 #include <assert.h>
 // Merge0309: for WIN32 platform
 #ifdef WIN32
-#include "unistd.h"
-#include "..\src\gettimeofday.h"
+#include "..\platform\unistd.h"
+#include "..\platform\gettimeofday.h"
 // Merge0313: rand thread safe in WIN32 using pthread
 unsigned int rand_win32() {
 	unsigned int rnd = 0;

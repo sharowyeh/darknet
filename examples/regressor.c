@@ -3,7 +3,7 @@
 #ifdef WIN32
 #include <time.h>
 #include <winsock.h>
-#include "..\src\gettimeofday.h"
+#include "..\platform\gettimeofday.h"
 #else
 #include <sys/time.h>
 #endif

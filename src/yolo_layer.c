@@ -236,7 +236,11 @@ void forward_yolo_layer(const layer l, network net)
         }
     }
     *(l.cost) = pow(mag_array(l.delta, l.outputs * l.batch), 2);
-    printf("Region %d Avg IOU: %f, Class: %f, Obj: %f, No Obj: %f, .5R: %f, .75R: %f,  count: %d\n", net.index, avg_iou/count, avg_cat/class_count, avg_obj/count, avg_anyobj/(l.w*l.h*l.n*l.batch), recall/count, recall75/count, count);
+	// Merge0409: format printf prevent zero denominator
+	if (count == 0)
+		printf("Yolo %3d Avg IOU: %f, Class: %f, Obj: %f, No Obj: %f, .5R: %f, .75R: %f,  count: %d\n", net.index, 0, 0, 0, avg_anyobj / (l.w*l.h*l.n*l.batch), 0, 0, count);
+	else
+		printf("Yolo %3d Avg IOU: %f, Class: %f, Obj: %f, No Obj: %f, .5R: %f, .75R: %f,  count: %d\n", net.index, avg_iou/count, avg_cat/class_count, avg_obj/count, avg_anyobj/(l.w*l.h*l.n*l.batch), recall/count, recall75/count, count);
 }
 
 void backward_yolo_layer(const layer l, network net)

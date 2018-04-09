@@ -1,6 +1,6 @@
 #include "reorg_old_layer.h"
-#include "cuda.h"
-#include "blas.h"
+#include "..\src\cuda.h"
+#include "..\src\blas.h"
 #include <stdio.h>
 
 

@@ -65,8 +65,9 @@ void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, i
 		// Merge0322: prevent definition confilicts by win32 method name
         if(l.use_random && count++%10 == 0){
             printf("Resizing\n");
-            int dim = (rand() % 8 + 10) * 32;
-            if (get_current_batch(net)+200 > net->max_batches) dim = 544;
+			// Merge0409: maximum 480 for yolov3 with 2G ram
+            int dim = (rand() % 6 + 10) * 32;
+            if (get_current_batch(net)+200 > net->max_batches) dim = 480;
             //int dim = (rand() % 4 + 16) * 32;
             printf("%d\n", dim);
             args.w = dim;

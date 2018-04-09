@@ -2,11 +2,23 @@
 
 #include <assert.h>
 #include <math.h>
+#ifdef WIN32
+#include "..\platform\unistd.h"
+#include "..\platform\gettimeofday.h"
+#else
 #include <unistd.h>
+#endif
 
 int inverted = 1;
 int noi = 1;
+#ifdef WIN32
+#define nind 10
+#define popen _popen
+#define sleep Sleep
+#define pclose _pclose
+#else
 static const int nind = 10;
+#endif
 int legal_go(float *b, float *ko, int p, int r, int c);
 int check_ko(float *x, float *ko);
 

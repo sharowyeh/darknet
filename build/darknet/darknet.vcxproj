@@ -115,6 +115,7 @@
     <ClCompile Include="..\..\examples\lsd.c" />
     <ClCompile Include="..\..\examples\regressor.c" />
     <ClCompile Include="..\..\examples\segmenter.c" />
+    <ClCompile Include="..\..\platform\cpu_gemm.c" />
     <ClCompile Include="..\..\src\activations.c" />
     <ClCompile Include="..\..\src\activation_layer.c" />
     <ClCompile Include="..\..\examples\art.c" />
@@ -131,7 +132,6 @@
     <ClCompile Include="..\..\src\connected_layer.c" />
     <ClCompile Include="..\..\src\convolutional_layer.c" />
     <ClCompile Include="..\..\src\cost_layer.c" />
-    <ClCompile Include="..\..\src\cpu_gemm.c" />
     <ClCompile Include="..\..\src\crnn_layer.c" />
     <ClCompile Include="..\..\src\crop_layer.c" />
     <ClCompile Include="..\..\src\cuda.c" />
@@ -144,16 +144,18 @@
     <ClCompile Include="..\..\examples\dice.c" />
     <ClCompile Include="..\..\src\dropout_layer.c" />
     <ClCompile Include="..\..\src\gemm.c" />
-    <ClCompile Include="..\..\src\getopt.c" />
-    <ClCompile Include="..\..\src\gettimeofday.c" />
-    <ClCompile Include="..\..\src\go.c" />
+    <ClCompile Include="..\..\platform\getopt.c" />
+    <ClCompile Include="..\..\platform\gettimeofday.c" />
+    <ClCompile Include="..\..\examples\go.c" />
     <ClCompile Include="..\..\src\gru_layer.c" />
-    <ClCompile Include="..\..\src\http_stream.cpp" />
+    <ClCompile Include="..\..\platform\http_stream.cpp" />
     <ClCompile Include="..\..\src\im2col.c" />
     <ClCompile Include="..\..\src\image.c" />
+    <ClCompile Include="..\..\src\l2norm_layer.c" />
     <ClCompile Include="..\..\src\layer.c" />
     <ClCompile Include="..\..\src\list.c" />
     <ClCompile Include="..\..\src\local_layer.c" />
+    <ClCompile Include="..\..\src\logistic_layer.c" />
     <ClCompile Include="..\..\src\lstm_layer.c" />
     <ClCompile Include="..\..\src\matrix.c" />
     <ClCompile Include="..\..\src\maxpool_layer.c" />
@@ -164,7 +166,7 @@
     <ClCompile Include="..\..\src\parser.c" />
     <ClCompile Include="..\..\src\region_layer.c" />
     <ClCompile Include="..\..\src\reorg_layer.c" />
-    <ClCompile Include="..\..\src\reorg_old_layer.c" />
+    <ClCompile Include="..\..\platform\reorg_old_layer.c" />
     <ClCompile Include="..\..\examples\rnn.c" />
     <ClCompile Include="..\..\src\rnn_layer.c" />
     <ClCompile Include="..\..\examples\rnn_vid.c" />
@@ -175,10 +177,12 @@
     <ClCompile Include="..\..\examples\swag.c" />
     <ClCompile Include="..\..\examples\tag.c" />
     <ClCompile Include="..\..\src\tree.c" />
+    <ClCompile Include="..\..\src\upsample_layer.c" />
     <ClCompile Include="..\..\src\utils.c" />
     <ClCompile Include="..\..\examples\voxel.c" />
     <ClCompile Include="..\..\examples\writing.c" />
     <ClCompile Include="..\..\examples\yolo.c" />
+    <ClCompile Include="..\..\src\yolo_layer.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\3rdparty\include\pthread.h" />
@@ -205,15 +209,17 @@
     <ClInclude Include="..\..\src\detection_layer.h" />
     <ClInclude Include="..\..\src\dropout_layer.h" />
     <ClInclude Include="..\..\src\gemm.h" />
-    <ClInclude Include="..\..\src\getopt.h" />
-    <ClInclude Include="..\..\src\gettimeofday.h" />
+    <ClInclude Include="..\..\platform\getopt.h" />
+    <ClInclude Include="..\..\platform\gettimeofday.h" />
     <ClInclude Include="..\..\src\gru_layer.h" />
-    <ClInclude Include="..\..\src\http_stream.h" />
+    <ClInclude Include="..\..\platform\http_stream.h" />
     <ClInclude Include="..\..\src\im2col.h" />
     <ClInclude Include="..\..\src\image.h" />
+    <ClInclude Include="..\..\src\l2norm_layer.h" />
     <ClInclude Include="..\..\src\layer.h" />
     <ClInclude Include="..\..\src\list.h" />
     <ClInclude Include="..\..\src\local_layer.h" />
+    <ClInclude Include="..\..\src\logistic_layer.h" />
     <ClInclude Include="..\..\src\lstm_layer.h" />
     <ClInclude Include="..\..\src\matrix.h" />
     <ClInclude Include="..\..\src\maxpool_layer.h" />
@@ -223,7 +229,7 @@
     <ClInclude Include="..\..\src\parser.h" />
     <ClInclude Include="..\..\src\region_layer.h" />
     <ClInclude Include="..\..\src\reorg_layer.h" />
-    <ClInclude Include="..\..\src\reorg_old_layer.h" />
+    <ClInclude Include="..\..\platform\reorg_old_layer.h" />
     <ClInclude Include="..\..\src\rnn_layer.h" />
     <ClInclude Include="..\..\src\route_layer.h" />
     <ClInclude Include="..\..\src\shortcut_layer.h" />
@@ -231,8 +237,10 @@
     <ClInclude Include="..\..\src\stb_image.h" />
     <ClInclude Include="..\..\src\stb_image_write.h" />
     <ClInclude Include="..\..\src\tree.h" />
-    <ClInclude Include="..\..\src\unistd.h" />
+    <ClInclude Include="..\..\platform\unistd.h" />
+    <ClInclude Include="..\..\src\upsample_layer.h" />
     <ClInclude Include="..\..\src\utils.h" />
+    <ClInclude Include="..\..\src\yolo_layer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\scripts\dice_label.sh" />
