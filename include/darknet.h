@@ -127,6 +127,20 @@ typedef struct network network;
 struct layer;
 typedef struct layer layer;
 
+// Merge0410: calculate total layers prediction of a train network batch
+typedef struct
+{
+	float count;
+	float iou;
+	float class_count;
+	float cat;
+	float obj;
+	float anyobj_count;
+	float anyobj;
+	float recall;
+	float recall75;
+} pred_result;
+
 struct layer{
     LAYER_TYPE type;
     ACTIVATION activation;
@@ -236,6 +250,9 @@ struct layer{
     float * state_delta;
     float * combine_cpu;
     float * combine_delta_cpu;
+
+	// Merge0410: calculate total layers prediction of a train network batch
+	pred_result *pred;
 
     float * concat;
     float * concat_delta;
@@ -499,6 +516,9 @@ typedef struct network{
     int index;
     float *cost;
     float clip;
+
+	// Merge0410: calculate total layers prediction of a train network batch
+	pred_result *pred;
 
 #ifdef GPU
     float *input_gpu;

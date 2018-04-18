@@ -251,6 +251,18 @@ void calc_network_cost(network *netp)
             sum += net.layers[i].cost[0];
             ++count;
         }
+		// Merge0410: calculate total layers prediction of a train network batch
+		if (netp->pred && net.layers[i].pred) {
+			netp->pred->count += net.layers[i].pred->count;
+			netp->pred->class_count += net.layers[i].pred->class_count;
+			netp->pred->anyobj_count += net.layers[i].pred->anyobj_count;
+			netp->pred->iou += net.layers[i].pred->iou;
+			netp->pred->cat += net.layers[i].pred->cat;
+			netp->pred->obj += net.layers[i].pred->obj;
+			netp->pred->anyobj += net.layers[i].pred->anyobj;
+			netp->pred->recall += net.layers[i].pred->recall;
+			netp->pred->recall75 += net.layers[i].pred->recall75;
+		}
     }
     *net.cost = sum/count;
 }
@@ -317,6 +329,13 @@ float train_network(network *net, data d)
     assert(d.X.rows % net->batch == 0);
     int batch = net->batch;
     int n = d.X.rows / batch;
+	
+	// Merge0410: calculate total layers prediction of a train network batch
+	/// initialize prediction result for all subvisions of a batch
+	if (net->pred)
+		memset(net->pred, 0, sizeof(pred_result));
+	else
+		net->pred = calloc(1, sizeof(pred_result));
 
     int i;
     float sum = 0;

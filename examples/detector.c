@@ -134,7 +134,9 @@ void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, i
 
         i = get_current_batch(net);
         printf("%ld: %f, %f avg, %f rate, %lf seconds, %d images\n", get_current_batch(net), loss, avg_loss, get_current_rate(net), what_time_is_it_now()-time, i*imgs);
-        /*if(i%100==0){
+		// Merge0410: calculate total layers prediction of a train network batch
+		printf("Pred Avg IOU: %f, Class: %f, Obj: %f, No Obj: %f, .5R: %.3f, .75R: %.3f, count: %d\n", net->pred->iou/net->pred->count, net->pred->cat/ net->pred->class_count, net->pred->obj / net->pred->count, net->pred->anyobj / net->pred->anyobj_count, net->pred->recall / net->pred->count, net->pred->recall75 / net->pred->count, (int)net->pred->count);
+		/*if(i%100==0){
 #ifdef GPU
             if(ngpus != 1) sync_nets(nets, ngpus, 0);
 #endif

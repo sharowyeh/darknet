@@ -44,6 +44,7 @@ layer make_yolo_layer(int batch, int w, int h, int n, int total, int *mask, int 
     for(i = 0; i < total*2; ++i){
         l.biases[i] = .5;
     }
+	l.pred = calloc(1, sizeof(pred_result));
 
     l.forward = forward_yolo_layer;
     l.backward = backward_yolo_layer;
@@ -235,12 +236,24 @@ void forward_yolo_layer(const layer l, network net)
             }
         }
     }
-    *(l.cost) = pow(mag_array(l.delta, l.outputs * l.batch), 2);
-	// Merge0409: format printf prevent zero denominator
-	if (count == 0)
-		printf("Yolo %3d Avg IOU: %f, Class: %f, Obj: %f, No Obj: %f, .5R: %f, .75R: %f,  count: %d\n", net.index, 0, 0, 0, avg_anyobj / (l.w*l.h*l.n*l.batch), 0, 0, count);
-	else
-		printf("Yolo %3d Avg IOU: %f, Class: %f, Obj: %f, No Obj: %f, .5R: %f, .75R: %f,  count: %d\n", net.index, avg_iou/count, avg_cat/class_count, avg_obj/count, avg_anyobj/(l.w*l.h*l.n*l.batch), recall/count, recall75/count, count);
+	*(l.cost) = pow(mag_array(l.delta, l.outputs * l.batch), 2);
+	// Merge0409: does not matter if current yolo layer mask has no truth (count is 0)
+	if (count == 0) {
+		memset(l.pred, 0, sizeof(pred_result));
+		return;
+	}
+	// Merge0410: calculate total layers prediction of a train network batch
+	l.pred->count = count;
+	l.pred->class_count = class_count;
+	l.pred->anyobj_count = l.w*l.h*l.n*l.batch;
+	l.pred->iou = avg_iou;
+	l.pred->cat = avg_cat;
+	l.pred->obj = avg_obj;
+	l.pred->anyobj = avg_anyobj;
+	l.pred->recall = recall;
+	l.pred->recall75 = recall75;
+
+	//printf("Yolo %3d Avg IOU: %f, Class: %f, Obj: %f, No Obj: %f, .5R: %f, .75R: %f,  count: %d\n", net.index, avg_iou/count, avg_cat/class_count, avg_obj/count, avg_anyobj/(l.w*l.h*l.n*l.batch), recall/count, recall75/count, count);
 }
 
 void backward_yolo_layer(const layer l, network net)
