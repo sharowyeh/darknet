@@ -3,7 +3,7 @@ git clone https://github.com/pdollar/coco
 cd coco
 
 mkdir images
-cd image
+cd images
 
 ## Download Images
 $wc = new-object System.Net.WebClient
