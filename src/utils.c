@@ -22,6 +22,7 @@ unsigned int rand_win32() {
 #include <float.h>
 #include <limits.h>
 #include <time.h>
+#include <sys/time.h>
 
 #include "utils.h"
 
@@ -40,9 +41,11 @@ double get_wall_time()
 
 double what_time_is_it_now()
 {
-    struct timespec now;
-    clock_gettime(CLOCK_REALTIME, &now);
-    return now.tv_sec + now.tv_nsec*1e-9;
+    struct timeval time;
+    if (gettimeofday(&time,NULL)){
+        return 0;
+    }
+    return (double)time.tv_sec + (double)time.tv_usec * .000001;
 }
 
 int *read_intlist(char *gpu_list, int *ngpus, int d)
