@@ -5,7 +5,7 @@ This is forked from [AlexeyAB/darknet](https://github.com/AlexeyAB/darknet) for 
 
 ## How to compile on Windows:
 
-1. It required **Visual Studio 2015** or later version with Platform Toolset v140 building source code, or visit [Visual Studio Downloads](https://www.visualstudio.com/downloads/) for more IDE information. The solution files of source code located at `build\darknet\`, use **Release** and **x64** building configuration
+1. It required **Visual Studio 2015** or later version with Platform Toolset v140 building source code, or visit [Visual Studio Downloads](https://www.visualstudio.com/downloads/) for more IDE information. The solution files of source code located at **build\darknet\**, use **Release** and **x64** building configuration
 
 2. Download **OpenCV 3.0** and follow [How to set building environment variables with Visual Studio](https://docs.opencv.org/3.3.0/d6/d8a/tutorial_windows_visual_studio_Opencv.html), and variable path should be target to **{_OpenCV Install Path_}\build\x64\vc14**
 
