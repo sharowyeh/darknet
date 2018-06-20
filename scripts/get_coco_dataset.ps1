@@ -1,9 +1,9 @@
 ## Clone COCO API
 git clone https://github.com/pdollar/coco
-cd coco
+Set-Location -Path .\coco
 
 mkdir images
-cd images
+Set-Location -Path .\images
 
 ## Download Images
 $wc = new-object System.Net.WebClient
@@ -17,7 +17,7 @@ Expand-Archive -Path val2014.zip -DestinationPath .\ -Force
 #[System.IO.Compression.ZipFile]::ExtractToDirectory("train2014.zip", ".\")
 #[System.IO.Compression.ZipFile]::ExtractToDirectory("val2014.zip", ".\")
 
-cd ..
+Set-Location -Path ..
 
 ## Download COCO Metadata
 $wc.DownloadFile("https://pjreddie.com/media/files/instances_train-val2014.zip", "instances_train-val2014.zip")

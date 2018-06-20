@@ -7,6 +7,7 @@
 #include "..\platform\gettimeofday.h"
 #else
 #include <unistd.h>
+#include <sys/select.h>
 #endif
 
 int inverted = 1;

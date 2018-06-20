@@ -18,11 +18,11 @@ unsigned int rand_win32() {
 }
 #else
 #include <unistd.h>
+#include <sys/time.h>
 #endif
 #include <float.h>
 #include <limits.h>
 #include <time.h>
-#include <sys/time.h>
 
 #include "utils.h"
 

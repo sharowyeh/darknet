@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4CF5694F-12A5-4012-8D94-9A0915E9FEB5}</ProjectGuid>
     <RootNamespace>darknet</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -243,6 +243,10 @@
     <ClInclude Include="..\..\src\yolo_layer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\python\darknet.py" />
+    <None Include="..\..\python\detector-scipy-opencv.py" />
+    <None Include="..\..\python\detector.py" />
+    <None Include="..\..\python\proverbot.py" />
     <None Include="..\..\scripts\dice_label.sh" />
     <None Include="..\..\scripts\gen_anchors.py" />
     <None Include="..\..\scripts\gen_tactic.sh" />

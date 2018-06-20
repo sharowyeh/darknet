@@ -303,7 +303,9 @@ float train_network_datum(network *net)
     *net->seen += net->batch;
     net->train = 1;
     forward_network(net);
+#ifdef GPU
 	cudaStreamSynchronize(get_cuda_stream());
+#endif
     backward_network(net);
     float error = *net->cost;
     if(((*net->seen)/net->batch)%net->subdivisions == 0) update_network(net);
