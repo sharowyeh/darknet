@@ -296,9 +296,6 @@
     <ClInclude Include="..\..\src\box.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\classifier.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\col2im.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -454,9 +451,6 @@
     <None Include="..\..\scripts\voc_label_difficult.py">
       <Filter>scripts</Filter>
     </None>
-    <None Include="..\..\python\darknet.py">
-      <Filter>python</Filter>
-    </None>
     <None Include="..\..\python\detector.py">
       <Filter>python</Filter>
     </None>
@@ -464,6 +458,15 @@
       <Filter>python</Filter>
     </None>
     <None Include="..\..\python\proverbot.py">
+      <Filter>python</Filter>
+    </None>
+    <None Include="..\..\scripts\get_coco_dataset.ps1">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\python\libdarknet.py">
+      <Filter>python</Filter>
+    </None>
+    <None Include="..\..\python\darknet.py">
       <Filter>python</Filter>
     </None>
   </ItemGroup>

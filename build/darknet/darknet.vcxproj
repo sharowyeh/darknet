@@ -195,7 +195,6 @@
     <ClInclude Include="..\..\src\batchnorm_layer.h" />
     <ClInclude Include="..\..\src\blas.h" />
     <ClInclude Include="..\..\src\box.h" />
-    <ClInclude Include="..\..\src\classifier.h" />
     <ClInclude Include="..\..\src\col2im.h" />
     <ClInclude Include="..\..\src\connected_layer.h" />
     <ClInclude Include="..\..\src\convolutional_layer.h" />
@@ -244,12 +243,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\python\darknet.py" />
+    <None Include="..\..\python\libdarknet.py" />
     <None Include="..\..\python\detector-scipy-opencv.py" />
     <None Include="..\..\python\detector.py" />
     <None Include="..\..\python\proverbot.py" />
     <None Include="..\..\scripts\dice_label.sh" />
     <None Include="..\..\scripts\gen_anchors.py" />
     <None Include="..\..\scripts\gen_tactic.sh" />
+    <None Include="..\..\scripts\get_coco_dataset.ps1" />
     <None Include="..\..\scripts\get_coco_dataset.sh" />
     <None Include="..\..\scripts\imagenet_label.sh" />
     <None Include="..\..\scripts\reval_voc.py" />
