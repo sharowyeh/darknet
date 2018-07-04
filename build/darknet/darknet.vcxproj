@@ -42,9 +42,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\</OutDir>
+    <LocalDebuggerWorkingDirectory>$(OutputPath)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\</OutDir>
+    <LocalDebuggerWorkingDirectory>$(OutputPath)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -243,7 +245,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\python\darknet.py" />
-    <None Include="..\..\python\libdarknet.py" />
+    <None Include="..\..\python\darknet_libwrapper.py" />
     <None Include="..\..\python\detector-scipy-opencv.py" />
     <None Include="..\..\python\detector.py" />
     <None Include="..\..\python\proverbot.py" />

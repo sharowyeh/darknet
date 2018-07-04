@@ -1,0 +1,13 @@
+compile_cuda:
+        stage: build
+        tags:
+                - docker
+                - linux
+        image: nvidia/cuda:9.1-cudnn7-devel-ubuntu16.04
+        script:
+                - make
+                - ls
+                - make clean
+                - make GPU=1 CUDNN=1
+                - ls
+

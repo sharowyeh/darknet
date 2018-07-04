@@ -9,7 +9,7 @@ void train_cifar(char *cfgfile, char *weightfile)
     network *net = load_network(cfgfile, weightfile, 0);
     printf("Learning Rate: %g, Momentum: %g, Decay: %g\n", net->learning_rate, net->momentum, net->decay);
 
-    char *backup_directory = "/home/pjreddie/backup/";
+    char *backup_directory = "data/backup/";
     int classes = 10;
     int N = 50000;
 

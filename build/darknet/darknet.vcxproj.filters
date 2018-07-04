@@ -463,10 +463,10 @@
     <None Include="..\..\scripts\get_coco_dataset.ps1">
       <Filter>scripts</Filter>
     </None>
-    <None Include="..\..\python\libdarknet.py">
+    <None Include="..\..\python\darknet.py">
       <Filter>python</Filter>
     </None>
-    <None Include="..\..\python\darknet.py">
+    <None Include="..\..\python\darknet_libwrapper.py">
       <Filter>python</Filter>
     </None>
   </ItemGroup>

@@ -1,7 +1,7 @@
 """
 Represent python module from examples/detector.c
 NOTICE: before loading network, verified runtime file paths in cfg or data file,
-        because libdarknet may uses file relative instead of calller working directory
+        because libdarknet may uses file relative instead of caller working directory
 """
 
 import ctypes
