@@ -4,22 +4,32 @@ NOTICE: before loading network, verified runtime file paths in cfg or data file,
         because libdarknet may uses file relative instead of caller working directory
 """
 
+import os
 import ctypes
 from darknet_libwrapper import *
+from demo import demo
 
 def run_detector(*argv):
-    """argv: test data cfg weight jpg"""
+    """argv: 'darknet' 'detector' 'test|demo' data cfg weight jpg|cam mp4"""
     if argv[2] == 'test':
         argv = [x for x in argv if x != 'test']
         argv.append('.5') #thresh
         argv.append('.5') #hier_thresh
         argv.append('.45') #nms
         test_detector(*argv)
+    elif argv[2] == 'demo':
+        argv = [x for x in argv if x != 'demo']
+        argv.insert(5, '.5') #thresh
+        if len(argv) == 7:
+            argv.append(None) #mp4
+        if len(argv) > 7 and not os.path.exists(os.path.join(os.getcwd(), argv[7])):
+            argv[7] = None
+        demo(*argv)
     else:
-        print('Not Implementation')
+        print('Not implement')
 
 def test_detector(*argv):
-    """argv: data cfg weight jpg thresh hier nms"""
+    """argv: 'darknet' 'detect' data cfg weight jpg thresh hier nms"""
     print('test data:{2} cfg:{3} weight:{4} img:{5}'.format(*argv))
     cuda_set_device(0)
     thresh = float(argv[6])

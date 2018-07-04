@@ -32,7 +32,6 @@ def _detector(net, meta, image, thresh=.5, hier=.5, nms=.45):
                 b = dets[j].bbox
                 res.append((meta.names[i], dets[j].prob[i], (b.x, b.y, b.w, b.h)))
     res = sorted(res, key=lambda x: -x[1])
-    free_image(im)
     free_detections(dets, num)
     return res
 
@@ -41,6 +40,7 @@ net = load_network("cfg/yolov2-tiny.cfg", "yolov2-tiny.weights", 0)
 meta = get_metadata("cfg/coco.data")
 im = load_image_color('data/dog.jpg', 0, 0)
 result = _detector(net, meta, im)
+free_image(im)
 print 'Darknet:\n', result
 
 # scipy

@@ -130,7 +130,7 @@ def free_ptrs(void_ptr, size):
 
 def reset_network_state(net_ptr, layer_index):
     """Cleanup output of given network layer"""
-    lib.reset_network_state.argtypes[ctypes.c_void_p, ctypes.c_int]
+    lib.reset_network_state.argtypes = [ctypes.c_void_p, ctypes.c_int]
     lib.reset_network_state(net_ptr, layer_index)
 
 # libdarknet.so did not exported, use reset_network_state given layer 0 instead
@@ -149,6 +149,14 @@ def load_network(cfg_file, weight_file, clean_seen):
     lib.load_network.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     lib.load_network.restype = ctypes.c_void_p
     return lib.load_network(cfg_file, weight_file, clean_seen)
+
+def set_batch_network(net_ptr, batch_num):
+    """
+    arg0: pointer of network
+    arg1: batch number for each layers
+    """
+    lib.set_batch_network.argtypes = [ctypes.c_void_p, ctypes.c_int]
+    lib.set_batch_network(net_ptr, batch_num)
 
 def do_nms_obj(dets_ptr, num_dets, classes, nms):
     """
