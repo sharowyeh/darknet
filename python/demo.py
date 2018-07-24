@@ -32,6 +32,7 @@ def _detector(net, meta, image, thresh=.5, hier=.5, nms=.45):
         for i in range(meta.classes):
             if dets[j].prob[i] > 0:
                 b = dets[j].bbox
+                # Notice: in Python3, mata.names[i] is bytes array from c_char_p instead of string
                 res.append((meta.names[i], dets[j].prob[i], (b.x, b.y, b.w, b.h)))
     res = sorted(res, key=lambda x: -x[1])
     free_detections(dets, num)

@@ -11,7 +11,7 @@ if os.path.exists(lib_path):
 elif os.path.exists(os.path.join(os.getcwd(), 'libdarknet.so')):
     lib_path = os.path.join(os.getcwd(), 'libdarknet.so')
 else:
-    print 'libdarknet.so can not be found!'
+    print('libdarknet.so can not be found!')
 
 def sample(probs):
     s = sum(probs)
@@ -146,9 +146,14 @@ def load_network(cfg_file, weight_file, clean_seen):
     arg2: is clean network seen
     return: pointer of network
     """
+    # The python string type in Python2 is bytes array consistent with ctypes.c_char_p,
+    # But unicode bytes in Python3 that needs to encode() for ctypes.c_char_p.
+    # Notice: darknet is ASCII only, care about encoding format or just using ASCII instead.  
+    byte_cfg = cfg_file.encode()
+    byte_weight = weight_file.encode()
     lib.load_network.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
     lib.load_network.restype = ctypes.c_void_p
-    return lib.load_network(cfg_file, weight_file, clean_seen)
+    return lib.load_network(byte_cfg, byte_weight, clean_seen)
 
 def set_batch_network(net_ptr, batch_num):
     """
@@ -194,9 +199,10 @@ def get_metadata(file_path):
     arg0: dataset's data file path
     return: metadata structure
     """
+    byte_path = file_path.encode()
     lib.get_metadata.argtypes = [ctypes.c_char_p]
     lib.get_metadata.restype = METADATA
-    return lib.get_metadata(file_path)
+    return lib.get_metadata(byte_path)
 
 def load_image_color(image_file, resize_width=0, resize_height=0):
     """
@@ -205,9 +211,10 @@ def load_image_color(image_file, resize_width=0, resize_height=0):
     arg2: positive height if need resize height
     return image structure
     """
+    byte_path = image_file.encode()
     lib.load_image_color.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int]
     lib.load_image_color.restype = IMAGE
-    return lib.load_image_color(image_file, resize_width, resize_height)
+    return lib.load_image_color(byte_path, resize_width, resize_height)
 
 def rgbgr_image(image):
     lib.rgbgr_image.argtypes = [IMAGE]

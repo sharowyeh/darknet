@@ -22,8 +22,9 @@ def run_detector(*argv):
         argv.insert(5, '.5') #thresh
         if len(argv) == 7:
             argv.append(None) #mp4
-        if len(argv) > 7 and not os.path.exists(os.path.join(os.getcwd(), argv[7])):
-            argv[7] = None
+        elif len(argv) > 7:
+            if not os.path.exists(os.path.join(os.getcwd(), argv[7])):
+                argv[7] = None
         demo(*argv)
     else:
         print('Not implement')
@@ -51,6 +52,7 @@ def test_detector(*argv):
         for i in range(meta.classes):
             if dets[j].prob[i] > 0:
                 b = dets[j].bbox
+                # Notice: in Python3, mata.names[i] is bytes array from c_char_p instead of string
                 res.append((meta.names[i], dets[j].prob[i], (b.x, b.y, b.w, b.h)))
     res = sorted(res, key=lambda x: -x[1])
     free_image(im)
@@ -81,8 +83,9 @@ def predict_image(net, meta, image, thresh, hier, nms):
         for i in range(meta.classes):
             if dets[j].prob[i] > 0:
                 b = dets[j].bbox
+                # Notice: in Python3, mata.names[i] is bytes array from c_char_p instead of string
                 res.append((meta.names[i], dets[j].prob[i], (b.x, b.y, b.w, b.h)))
     res = sorted(res, key=lambda x: -x[1])
-    print res
+    print('result:', res)
     free_detections(dets, num)
     return res
