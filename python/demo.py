@@ -6,6 +6,9 @@ Functions given camera index or media file for frame detection
 import ctypes
 from darknet_libwrapper import *
 import cv2
+import numpy as np
+
+alphabet = load_alphabet()
 
 def array_to_image(arr):
     arr = arr.transpose(2,0,1)
@@ -16,6 +19,24 @@ def array_to_image(arr):
     data = c_array(ctypes.c_float, arr)
     im = IMAGE(w,h,c,data)
     return im
+
+def ipl_to_image(ipl):
+    im = array_to_image(ipl)
+    rgbgr_image(im)
+    return im
+
+def image_to_ipl(im):
+    rgbgr_image(im)
+    # super fast!!
+    buff = np.ctypeslib.as_array(im.data, shape=(im.c, im.h, im.w))
+    buff = (buff * 255.0).astype(np.uint8)
+    buff = buff.transpose(1,2,0)
+    # following steps cost resource transform ctypes.POINTER to ndarray
+    #ptr = ctypes.cast(im.data, ctypes.POINTER(ctypes.c_float * (im.c * im.h * im.w)))
+    #buff = np.fromiter(ptr.contents, dtype=np.float, count=(im.c * im.h * im.w))
+    #buff = (buff * 255.0).reshape(im.c, im.h, im.w).astype(np.uint8)
+    #buff = buff.transpose(1,2,0)
+    return buff
 
 def _detector(net, meta, image, thresh=.5, hier=.5, nms=.45):
     cuda_set_device(0)
@@ -34,7 +55,15 @@ def _detector(net, meta, image, thresh=.5, hier=.5, nms=.45):
                 b = dets[j].bbox
                 # Notice: in Python3, mata.names[i] is bytes array from c_char_p instead of string
                 res.append((meta.names[i], dets[j].prob[i], (b.x, b.y, b.w, b.h)))
+                # Begins from yolov3, bbox coords has been changed to % of image's width and height
+                # via network_predict(), remember_network() and avg_predictions()
+                # TODO: solve this workaround for coords via get_network_boxes()
+                dets[j].bbox.x = b.x / image.w
+                dets[j].bbox.w = b.w / image.w
+                dets[j].bbox.y = b.y / image.h
+                dets[j].bbox.h = b.h / image.h
     res = sorted(res, key=lambda x: -x[1])
+    draw_detections(image, dets, num, thresh, meta.names, alphabet, meta.classes)
     free_detections(dets, num)
     return res
 
@@ -64,13 +93,20 @@ def demo(*argv):
     height = cap.get(4)
     # CV_CAP_PROP_FPS = 5
     fps = cap.get(5)
-    print('cap is open?', cap.isOpened())
+    print('cap is open?', cap.isOpened(), width, height)
+    cv2.namedWindow('Demo', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('Demo', int(width), int(height))
     while cap.isOpened():
         ret, frame = cap.read()
         if frame is None:
             break
-        im = array_to_image(frame)
-        rgbgr_image(im)
+        im = ipl_to_image(frame)
         result = _detector(net, meta, im)
-        print('result:', result)
+        disp = image_to_ipl(im)
+        cv2.imshow('Demo', disp)
+        key = cv2.waitKey(1)
+        if key == 27:
+            break
+        #print('result:', result)
+    cv2.destroyAllWindows()
     cap.release()

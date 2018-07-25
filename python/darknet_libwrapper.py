@@ -5,13 +5,20 @@ import math
 import random
 # For dll open path from file relative or caller working directory
 import os
-lib_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'libdarknet.so')
+if os.name == 'posix':
+    lib_name = 'libdarknet.so'
+elif os.name == 'nt':
+    lib_name = 'libdarknet.dll'
+else:
+    print('system: {} unknown'.format(os.name))
+
+lib_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), lib_name)
 if os.path.exists(lib_path):
     pass
-elif os.path.exists(os.path.join(os.getcwd(), 'libdarknet.so')):
-    lib_path = os.path.join(os.getcwd(), 'libdarknet.so')
+elif os.path.exists(os.path.join(os.getcwd(), lib_name)):
+    lib_path = os.path.join(os.getcwd(), lib_name)
 else:
-    print('libdarknet.so can not be found!')
+    print('library: {} can not be found!'.format(lib_name))
 
 def sample(probs):
     s = sum(probs)
@@ -117,6 +124,23 @@ def get_network_boxes(net_ptr, w, h, thresh, hier, map_ptr, relative, num_ptr):
 #make_network_boxes = lib.make_network_boxes
 #make_network_boxes.argtypes = [ctypes.c_void_p]
 #make_network_boxes.restype = ctypes.POINTER(DETECTION)
+
+def load_alphabet():
+    #lib.load_alphabet.restype = ctypes.POINTER(ctypes.POINTER(IMAGE))
+    lib.load_alphabet.restype = ctypes.c_void_p
+    return lib.load_alphabet()
+
+def draw_detections(image, dets_ptr, num_dets, thresh, meta_names, alphabet, meta_classes):
+    lib.draw_detections.argtypes = [
+        IMAGE,
+        ctypes.POINTER(DETECTION),
+        ctypes.c_int,
+        ctypes.c_float,
+        ctypes.POINTER(ctypes.c_char_p),
+        ctypes.c_void_p,
+        ctypes.c_int
+    ]
+    lib.draw_detections(image, dets_ptr, num_dets, thresh, meta_names, alphabet, meta_classes)
 
 def free_detections(dets_ptr, num_dets):
     """Release array of DETECTION struct"""
