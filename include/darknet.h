@@ -44,12 +44,25 @@ extern int gpu_index;
     #endif
 #endif
 
+// For win32 dll exports
+#if WIN32
+#ifdef DLL_EXPORTS
+#define DLL_EXPORTS __declspec(dllexport)
+#else
+#define DLL_EXPORTS
+#endif
+#else
+// GCC 4.x and later version uses __attribute__ with visibility for default or hidden export methods
+// refer to http://gcc.gnu.org/wiki/Visibility
+#define DLL_EXPORTS __attribute__((visibility("default")))
+#endif
+
 typedef struct{
     int classes;
     char **names;
 } metadata;
 
-metadata get_metadata(char *file);
+DLL_EXPORTS metadata get_metadata(char *file);
 
 typedef struct{
     int *leaf;
@@ -618,7 +631,7 @@ typedef struct{
 } box_label;
 
 
-network *load_network(char *cfg, char *weights, int clear);
+DLL_EXPORTS network *load_network(char *cfg, char *weights, int clear);
 load_args get_base_args(network *net);
 
 void free_data(data d);
@@ -663,7 +676,7 @@ void fill_gpu(int N, float ALPHA, float * X, int INCX);
 void scal_gpu(int N, float ALPHA, float * X, int INCX);
 void copy_gpu(int N, float * X, int INCX, float * Y, int INCY);
 
-void cuda_set_device(int n);
+DLL_EXPORTS void cuda_set_device(int n);
 void cuda_free(float *x_gpu);
 float *cuda_make_array(float *x, size_t n);
 void cuda_pull_array(float *x_gpu, float *x, size_t n);
@@ -686,7 +699,7 @@ void grayscale_image_3c(image im);
 void normalize_image(image p);
 void matrix_to_csv(matrix m);
 float train_network_sgd(network *net, data d, int n);
-void rgbgr_image(image im);
+DLL_EXPORTS void rgbgr_image(image im);
 data copy_data(data d);
 data concat_data(data d1, data d2);
 data load_cifar10_data(char *filename);
@@ -722,10 +735,10 @@ void zero_objectness(layer l);
 void get_region_detections(layer l, int w, int h, int netw, int neth, float thresh, int *map, float tree_thresh, int relative, detection *dets);
 int get_yolo_detections(layer l, int w, int h, int netw, int neth, float thresh, int *map, int relative, detection *dets);
 void free_network(network *net);
-void set_batch_network(network *net, int b);
+DLL_EXPORTS void set_batch_network(network *net, int b);
 void set_temp_network(network *net, float t);
 image load_image(char *filename, int w, int h, int c);
-image load_image_color(char *filename, int w, int h);
+DLL_EXPORTS image load_image_color(char *filename, int w, int h);
 image make_image(int w, int h, int c);
 image resize_image(image im, int w, int h);
 void censor_image(image im, int dx, int dy, int w, int h);
@@ -766,25 +779,25 @@ float box_iou(box a, box b);
 data load_all_cifar10();
 box_label *read_boxes(char *filename, int *n);
 box float_to_box(float *f, int stride);
-void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes);
+DLL_EXPORTS void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes);
 
 matrix network_predict_data(network *net, data test);
-image **load_alphabet();
+DLL_EXPORTS image **load_alphabet();
 image get_network_image(network *net);
 float *network_predict(network *net, float *input);
 
 int network_width(network *net);
 int network_height(network *net);
-float *network_predict_image(network *net, image im);
+DLL_EXPORTS float *network_predict_image(network *net, image im);
 void network_detect(network *net, image im, float thresh, float hier_thresh, float nms, detection *dets);
-detection *get_network_boxes(network *net, int w, int h, float thresh, float hier, int *map, int relative, int *num);
-void free_detections(detection *dets, int n);
+DLL_EXPORTS detection *get_network_boxes(network *net, int w, int h, float thresh, float hier, int *map, int relative, int *num);
+DLL_EXPORTS void free_detections(detection *dets, int n);
 
 void reset_network_state(network *net, int b);
 
 char **get_labels(char *filename);
 void do_nms_obj(detection *dets, int total, int classes, float thresh);
-void do_nms_sort(detection *dets, int total, int classes, float thresh);
+DLL_EXPORTS void do_nms_sort(detection *dets, int total, int classes, float thresh);
 
 matrix make_matrix(int rows, int cols);
 
@@ -793,7 +806,7 @@ matrix make_matrix(int rows, int cols);
 image get_image_from_stream(CvCapture *cap);
 #endif
 #endif
-void free_image(image m);
+DLL_EXPORTS void free_image(image m);
 float train_network(network *net, data d);
 pthread_t load_data_in_thread(load_args args);
 void load_data_blocking(load_args args);

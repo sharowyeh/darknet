@@ -246,6 +246,7 @@
   <ItemGroup>
     <None Include="..\..\python\darknet.py" />
     <None Include="..\..\python\darknet_libwrapper.py" />
+    <None Include="..\..\python\demo.py" />
     <None Include="..\..\python\detector-scipy-opencv.py" />
     <None Include="..\..\python\detector.py" />
     <None Include="..\..\python\proverbot.py" />
