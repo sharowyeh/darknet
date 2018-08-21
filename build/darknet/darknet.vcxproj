@@ -114,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\examples\attention.c" />
+    <ClCompile Include="..\..\examples\instance-segmenter.c" />
     <ClCompile Include="..\..\examples\lsd.c" />
     <ClCompile Include="..\..\examples\regressor.c" />
     <ClCompile Include="..\..\examples\segmenter.c" />
@@ -153,6 +154,7 @@
     <ClCompile Include="..\..\platform\http_stream.cpp" />
     <ClCompile Include="..\..\src\im2col.c" />
     <ClCompile Include="..\..\src\image.c" />
+    <ClCompile Include="..\..\src\iseg_layer.c" />
     <ClCompile Include="..\..\src\l2norm_layer.c" />
     <ClCompile Include="..\..\src\layer.c" />
     <ClCompile Include="..\..\src\list.c" />
@@ -216,6 +218,7 @@
     <ClInclude Include="..\..\platform\http_stream.h" />
     <ClInclude Include="..\..\src\im2col.h" />
     <ClInclude Include="..\..\src\image.h" />
+    <ClInclude Include="..\..\src\iseg_layer.h" />
     <ClInclude Include="..\..\src\l2norm_layer.h" />
     <ClInclude Include="..\..\src\layer.h" />
     <ClInclude Include="..\..\src\list.h" />

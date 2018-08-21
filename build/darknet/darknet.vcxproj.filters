@@ -249,6 +249,12 @@
     <ClCompile Include="..\..\src\yolo_layer.c">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\iseg_layer.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\instance-segmenter.c">
+      <Filter>examples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\darknet.h">
@@ -414,6 +420,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\yolo_layer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\iseg_layer.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

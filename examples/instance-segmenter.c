@@ -1,5 +1,11 @@
 #include "darknet.h"
+#ifdef WIN32
+#include <time.h>
+#include <winsock.h>
+#include "..\platform\gettimeofday.h"
+#else
 #include <sys/time.h>
+#endif
 #include <assert.h>
 
 void normalize_image2(image p);
