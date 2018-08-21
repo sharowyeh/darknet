@@ -186,7 +186,6 @@ void demo_regressor(char *datacfg, char *cfgfile, char *weightfile, int cam_inde
         image in = get_image_from_stream(cap);
         image crop = center_crop_image(in, net->w, net->h);
         grayscale_image_3c(crop);
-        show_image(crop, "Regressor");
 
         float *predictions = network_predict(net, crop.data);
 
@@ -199,10 +198,9 @@ void demo_regressor(char *datacfg, char *cfgfile, char *weightfile, int cam_inde
             printf("%s: %f\n", names[i], predictions[i]);
         }
 
+        show_image(crop, "Regressor", 10);
         free_image(in);
         free_image(crop);
-
-        cvWaitKey(10);
 
         gettimeofday(&tval_after, NULL);
         timersub(&tval_after, &tval_before, &tval_result);

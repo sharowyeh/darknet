@@ -1,15 +1,9 @@
 #include "darknet.h"
-// Merge0309: for WIN32 platform
-#ifdef WIN32
-#include <time.h>
-#include <winsock.h>
-#include "..\platform\gettimeofday.h"
-#else
 #include <sys/time.h>
-#endif
 #include <assert.h>
 
-void train_segmenter(char *datacfg, char *cfgfile, char *weightfile, int *gpus, int ngpus, int clear, int display)
+void normalize_image2(image p);
+void train_isegmenter(char *datacfg, char *cfgfile, char *weightfile, int *gpus, int ngpus, int clear, int display)
 {
     int i;
 
@@ -33,6 +27,10 @@ void train_segmenter(char *datacfg, char *cfgfile, char *weightfile, int *gpus, 
     network *net = nets[0];
     image pred = get_network_image(net);
 
+    image embed = pred;
+    embed.c = 3;
+    embed.data += embed.w*embed.h*80;
+
     int div = net->w/pred.w;
     assert(pred.w * div == net->w);
     assert(pred.h * div == net->h);
@@ -55,6 +53,7 @@ void train_segmenter(char *datacfg, char *cfgfile, char *weightfile, int *gpus, 
     args.h = net->h;
     args.threads = 32;
     args.scale = div;
+    args.num_boxes = 90;
 
     args.min = net->min_crop;
     args.max = net->max_crop;
@@ -69,7 +68,7 @@ void train_segmenter(char *datacfg, char *cfgfile, char *weightfile, int *gpus, 
     args.paths = paths;
     args.n = imgs;
     args.m = N;
-    args.type = SEGMENTATION_DATA;
+    args.type = ISEG_DATA;
 
     data train;
     data buffer;
@@ -101,8 +100,14 @@ void train_segmenter(char *datacfg, char *cfgfile, char *weightfile, int *gpus, 
         if(display){
             image tr = float_to_image(net->w/div, net->h/div, 80, train.y.vals[net->batch*(net->subdivisions-1)]);
             image im = float_to_image(net->w, net->h, net->c, train.X.vals[net->batch*(net->subdivisions-1)]);
+            pred.c = 80;
             image mask = mask_to_rgb(tr);
             image prmask = mask_to_rgb(pred);
+            image ecopy = copy_image(embed);
+            normalize_image2(ecopy);
+            show_image(ecopy, "embed", 1);
+            free_image(ecopy);
+
             show_image(im, "input", 1);
             show_image(prmask, "pred", 1);
             show_image(mask, "truth", 100);
@@ -135,7 +140,7 @@ void train_segmenter(char *datacfg, char *cfgfile, char *weightfile, int *gpus, 
     free(base);
 }
 
-void predict_segmenter(char *datafile, char *cfg, char *weights, char *filename)
+void predict_isegmenter(char *datafile, char *cfg, char *weights, char *filename)
 {
     network *net = load_network(cfg, weights, 0);
     set_batch_network(net, 1);
@@ -174,7 +179,7 @@ void predict_segmenter(char *datafile, char *cfg, char *weights, char *filename)
 }
 
 
-void demo_segmenter(char *datacfg, char *cfg, char *weights, int cam_index, const char *filename)
+void demo_isegmenter(char *datacfg, char *cfg, char *weights, int cam_index, const char *filename)
 {
 #ifdef OPENCV
     printf("Classifier Demo\n");
@@ -211,7 +216,7 @@ void demo_segmenter(char *datacfg, char *cfg, char *weights, int cam_index, cons
         image pred = get_network_image(net);
         image prmask = mask_to_rgb(pred);
         show_image(prmask, "Segmenter", 10);
-        
+
         free_image(in_s);
         free_image(in);
         free_image(prmask);
@@ -225,7 +230,7 @@ void demo_segmenter(char *datacfg, char *cfg, char *weights, int cam_index, cons
 }
 
 
-void run_segmenter(int argc, char **argv)
+void run_isegmenter(int argc, char **argv)
 {
     if(argc < 4){
         fprintf(stderr, "usage: %s %s [train/test/valid] [cfg] [weights (optional)]\n", argv[0], argv[1]);
@@ -262,9 +267,9 @@ void run_segmenter(int argc, char **argv)
     char *cfg = argv[4];
     char *weights = (argc > 5) ? argv[5] : 0;
     char *filename = (argc > 6) ? argv[6]: 0;
-    if(0==strcmp(argv[2], "test")) predict_segmenter(data, cfg, weights, filename);
-    else if(0==strcmp(argv[2], "train")) train_segmenter(data, cfg, weights, gpus, ngpus, clear, display);
-    else if(0==strcmp(argv[2], "demo")) demo_segmenter(data, cfg, weights, cam_index, filename);
+    if(0==strcmp(argv[2], "test")) predict_isegmenter(data, cfg, weights, filename);
+    else if(0==strcmp(argv[2], "train")) train_isegmenter(data, cfg, weights, gpus, ngpus, clear, display);
+    else if(0==strcmp(argv[2], "demo")) demo_isegmenter(data, cfg, weights, cam_index, filename);
 }
 
 
