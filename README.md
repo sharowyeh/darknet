@@ -3,6 +3,8 @@
 ## About this fork:
 This is forked from [AlexeyAB/darknet](https://github.com/AlexeyAB/darknet) for Windows(mainly) and Linux develop environment, and set upstream from [pjreddie/darknet](https://github.com/pjreddie/darknet) for weights data structor which has been changed.
 
+It also contains python wrapper and simple usage in [python directory](https://github.com/sharowyeh/darknet/tree/master-pjreddie/python) for libdarknet.so or libdarknet.dll (which is compiled from gcc or visual studio)
+
 ## How to compile on Windows:
 
 1. It required **Visual Studio 2015** or later version with Platform Toolset v140 building source code, or visit [Visual Studio Downloads](https://www.visualstudio.com/downloads/) for more IDE information. The solution files of source code located at **build\darknet\**, use **Release** and **x64** building configuration
