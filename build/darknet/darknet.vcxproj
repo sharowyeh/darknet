@@ -154,6 +154,7 @@
     <ClCompile Include="..\..\platform\http_stream.cpp" />
     <ClCompile Include="..\..\src\im2col.c" />
     <ClCompile Include="..\..\src\image.c" />
+    <ClCompile Include="..\..\src\image_opencv.cpp" />
     <ClCompile Include="..\..\src\iseg_layer.c" />
     <ClCompile Include="..\..\src\l2norm_layer.c" />
     <ClCompile Include="..\..\src\layer.c" />

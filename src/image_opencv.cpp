@@ -78,6 +78,12 @@ void *open_video_stream(const char *f, int c, int w, int h, int fps)
     return (void *) cap;
 }
 
+double get_video_capture_prop(void *p, int prop_id) 
+{
+	VideoCapture *cap = (VideoCapture *)p;
+	return cap->get(prop_id);
+}
+
 image get_image_from_stream(void *p)
 {
     VideoCapture *cap = (VideoCapture *)p;

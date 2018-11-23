@@ -224,9 +224,9 @@ void demo(char *cfgfile, char *weightfile, float thresh, int cam_index, const ch
     }
 
     if(!cap) error("Couldn't connect to webcam.\n");
-	w = cvGetCaptureProperty(cap, CV_CAP_PROP_FRAME_WIDTH);
-	h = cvGetCaptureProperty(cap, CV_CAP_PROP_FRAME_HEIGHT);
-	frames = cvGetCaptureProperty(cap, CV_CAP_PROP_FPS);
+	w = get_video_capture_prop(cap, CV_CAP_PROP_FRAME_WIDTH);
+	h = get_video_capture_prop(cap, CV_CAP_PROP_FRAME_HEIGHT);
+	frames = get_video_capture_prop(cap, CV_CAP_PROP_FPS);
 
     buff[0] = get_image_from_stream(cap);
     buff[1] = copy_image(buff[0]);

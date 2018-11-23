@@ -255,6 +255,9 @@
     <ClCompile Include="..\..\examples\instance-segmenter.c">
       <Filter>examples</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\image_opencv.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\darknet.h">

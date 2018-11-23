@@ -164,7 +164,7 @@ char *labels[] = {"airplane","automobile","bird","cat","deer","dog","frog","hors
         int class_id = max_index(test.y.vals[i], 10);
         char buff[256];
         sprintf(buff, "data/cifar/test/%d_%s",i,labels[class_id]);
-        save_image_png(im, buff);
+		save_image_options(im, buff, PNG, 0);
     }
 }
 
